@@ -1,0 +1,206 @@
+{
+    "conds": {
+        "cellModel": "HH_reduced",
+        "cellType": "TI",
+        "ynorm": [
+            1.2,
+            1.4
+        ]
+    },
+    "globals": {
+        "Cai0_Ca_ion": 5e-05,
+        "Cao0_Ca_ion": 2.0,
+        "beta_iahp": 0.02,
+        "beta_icanINT": 0.003,
+        "cac_iahp": 0.0008,
+        "cac_icanINT": 0.00011,
+        "kd2_Cad_int": 0.0009,
+        "kd2_cad_int": 0.0009,
+        "sh1_icalINT": -10.0,
+        "sh_it2INT": 4.6,
+        "shift2_it2INT": 0.0,
+        "sm_it2INT": 4.8,
+        "x_icanINT": 8.0
+    },
+    "secLists": {
+        "all": [
+            "soma",
+            "dend"
+        ],
+        "dend_all": [
+            "dend"
+        ],
+        "proximal": [
+            "soma",
+            "dend"
+        ]
+    },
+    "secs": {
+        "dend": {
+            "geom": {
+                "L": 240.0,
+                "Ra": 120.0,
+                "cm": 1.0,
+                "diam": 3.25,
+                "nseg": 1,
+                "pt3d": [
+                    [
+                        0,
+                        16.0,
+                        0,
+                        3.25
+                    ],
+                    [
+                        0,
+                        256.0,
+                        0,
+                        3.25
+                    ]
+                ]
+            },
+            "mechs": {
+                "Pass": {
+                    "erev": -74.0,
+                    "g": 1.3e-05
+                }
+            },
+            "topol": {
+                "childX": 0.0,
+                "parentSec": "soma",
+                "parentX": 0.0
+            },
+            "weightNorm": [
+                0.000167642970394919
+            ]
+        },
+        "soma": {
+            "geom": {
+                "L": 16.0,
+                "Ra": 120.0,
+                "cm": 1.0,
+                "diam": 10.0,
+                "nseg": 1,
+                "pt3d": [
+                    [
+                        0,
+                        0,
+                        0,
+                        10.0
+                    ],
+                    [
+                        0,
+                        16.0,
+                        0,
+                        10.0
+                    ]
+                ]
+            },
+            "ions": {
+                "Ca": {
+                    "e": 0.0,
+                    "i": 1.0,
+                    "o": 1.0
+                },
+                "ca": {
+                    "e": 132.4579341637009,
+                    "i": 5e-05,
+                    "o": 2.0
+                },
+                "k": {
+                    "e": -95.0,
+                    "i": 54.4,
+                    "o": 2.5
+                },
+                "k2": {
+                    "e": -95.0,
+                    "i": 1.0,
+                    "o": 1.0
+                },
+                "na": {
+                    "e": 50.0,
+                    "i": 10.0,
+                    "o": 140.0
+                },
+                "other": {
+                    "e": 0.0,
+                    "i": 1.0,
+                    "o": 1.0
+                },
+                "other2": {
+                    "e": 0.0,
+                    "i": 1.0,
+                    "o": 1.0
+                }
+            },
+            "mechs": {
+                "Cad_int": {
+                    "Cai0": 5e-05,
+                    "Cainf": 1e-08,
+                    "Cainf2": 5.2e-05,
+                    "depth": 0.1,
+                    "k": 0.005,
+                    "kd": 0.0009,
+                    "kt": 0.0,
+                    "kt2": 0.0,
+                    "taur": 150.0,
+                    "taur2": 80.0
+                },
+                "Pass": {
+                    "erev": -74.0,
+                    "g": 1.3e-05
+                },
+                "cad_int": {
+                    "cai0": 5e-05,
+                    "cainf": 1e-08,
+                    "cainf2": 5.3e-05,
+                    "depth": 0.1,
+                    "k": 0.0075,
+                    "kd": 0.0009,
+                    "kt": 0.0,
+                    "kt2": 0.0,
+                    "taur": 150.0,
+                    "taur2": 80.0
+                },
+                "iahp": {
+                    "gkbar": 0.45,
+                    "ratC": 1.0,
+                    "ratc": 0.2
+                },
+                "iar": {
+                    "ghbar": 7e-05,
+                    "shift": -0.0
+                },
+                "icalINT": {
+                    "pcabar": 9e-05
+                },
+                "icanINT": {
+                    "gbar": 0.0001,
+                    "ratC": 0.1,
+                    "ratc": 0.8
+                },
+                "it2INT": {
+                    "gcabar": 4e-05,
+                    "shift1": 7.0
+                },
+                "kdr2orig": {
+                    "gmax": 0.1,
+                    "hvalence": -6.0,
+                    "hvhalf": -39.0,
+                    "mvalence": 3.8,
+                    "mvhalf": -31.0
+                },
+                "naf2": {
+                    "gmax": 0.1,
+                    "hvalence": -6.0,
+                    "hvhalf": -43.0,
+                    "mvalence": 5.0,
+                    "mvhalf": -40.0
+                }
+            },
+            "topol": {},
+            "weightNorm": [
+                0.00016693822725094408
+            ]
+        }
+    }
+}

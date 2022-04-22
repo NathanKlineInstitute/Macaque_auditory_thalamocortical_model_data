@@ -1,0 +1,99 @@
+
+v_init = -67.66
+celsius = 37
+
+begintemplate ngfcell
+public init
+public soma, dend
+
+create soma, dend
+
+
+proc topol() {
+	connect dend(0), soma(0)
+}
+
+
+proc init() {
+	topol()
+	soma {
+		Ra = 14
+		nseg = 1
+		cm = 1.5
+		L = 9.5
+		diam = 9.5 
+
+
+		insert ch_Navngf
+		gmax_ch_Navngf=0.1 //3.7860265 //gNasoma //0.10*gna_scale
+		ena = 55 
+
+		insert hd
+		gbar_hd = 1e-05
+
+		insert ch_Kdrfastngf
+		gmax_ch_Kdrfastngf=0.09 //0.15514516// kdrf 
+
+		insert pas
+		g_pas = 5e-7
+		e_pas = -85
+
+		insert iconc_Ca
+		catau_iconc_Ca = 10
+		caiinf_iconc_Ca = 5.e-6
+
+		insert ch_KvAngf
+		gmax_ch_KvAngf = 5.2e-02 // 5.2203905e-06 //gKvA
+
+		insert ch_CavN  // CALCIUM // HAV-N- Ca channel
+		gmax_ch_CavN =  0.00058169587 // gCavN (N-type)
+
+		insert ch_CavL  // CALCIUM 
+		gmax_ch_CavL= 0.056108352 //gCavL (L-type)
+
+		insert ch_KCaS
+		gmax_ch_KCaS=6e-03 //4.5e-03 //4.5152237e-07 //gKCaS 
+
+		insert ch_KvCaB
+		gmax_ch_KvCaB = 1.0235317e-06 //gKvCaB
+
+		ek=-90
+		eca=130
+	}
+
+	dend {
+		Ra = 14
+		nseg = 1
+		cm = 1.5
+		diam = 7 // from PV cell
+		L = 44 // from PV cell 
+
+		// LEAK CHANNEL
+		insert pas
+		e_pas = -67
+		g_pas = 3e-4 //0.001 
+
+		// Fast Na+ for Spiking 	//gNasoma
+		insert ch_Navngf
+		gmax_ch_Navngf=3.7860265
+		ena = 55
+
+
+		// Fast K+  	//kdrf 
+		insert ch_Kdrfastngf
+		gmax_ch_Kdrfastngf=0.03 //0.15514516
+		ek = -90
+	}
+
+}
+
+
+
+
+endtemplate ngfcell
+
+
+
+
+
+
