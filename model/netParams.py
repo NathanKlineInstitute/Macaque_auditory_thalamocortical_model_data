@@ -661,24 +661,6 @@ if cfg.addBkgConn:
 
 
 #------------------------------------------------------------------------------
-# Current inputs (IClamp)
-#------------------------------------------------------------------------------
-# if cfg.addIClamp:
-#  	for key in [k for k in dir(cfg) if k.startswith('IClamp')]:
-# 		params = getattr(cfg, key, None)
-# 		[pop,sec,loc,start,dur,amp] = [params[s] for s in ['pop','sec','loc','start','dur','amp']]
-        
-#         		# add stim source
-# 		netParams.stimSourceParams[key] = {'type': 'IClamp', 'delay': start, 'dur': dur, 'amp': amp}
-        
-# 		# connect stim source to target
-# 		netParams.stimTargetParams[key+'_'+pop] =  {
-# 			'source': key, 
-# 			'conds': {'pop': pop},
-# 			'sec': sec, 
-# 			'loc': loc}
-
-#------------------------------------------------------------------------------
 # NetStim inputs (to simulate short external stimuli; not bkg)
 #------------------------------------------------------------------------------
 if cfg.addNetStim:
