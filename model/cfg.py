@@ -22,8 +22,8 @@ cfg = specs.SimConfig()
 #------------------------------------------------------------------------------
 # Run parameters
 #------------------------------------------------------------------------------
-cfg.duration = 0.3*1e3			## Duration of the sim, in ms -- value from M1 cfg.py 
-cfg.dt = 0.05                   ## Internal Integration Time Step -- value from M1 cfg.py 
+cfg.duration = 1.0*1e3			## Duration of the sim, in ms 
+cfg.dt = 0.05                   ## Internal Integration Time Step 
 cfg.verbose = 0         	## Show detailed messages
 cfg.hParams['celsius'] = 37
 cfg.createNEURONObj = 1
@@ -50,13 +50,13 @@ cfg.allThalPops = ['TC', 'TCM', 'HTC', 'IRE', 'IREM', 'TI', 'TIM', 'IC']
 
 alltypes = ['NGF1', 'IT2', 'PV2', 'SOM2', 'VIP2', 'ITS4', 'PT5B', 'TC', 'HTC', 'IRE', 'TI']
 
-cfg.recordTraces = {'V_soma': {'sec':'soma', 'loc': 0.5, 'var':'v'}}  ## Dict with traces to record -- taken from M1 cfg.py 
+cfg.recordTraces = {'V_soma': {'sec':'soma', 'loc': 0.5, 'var':'v'}}  ## Dict with traces to record 
 cfg.recordStim = False			## Seen in M1 cfg.py
 cfg.recordTime = False  		## SEen in M1 cfg.py 
-cfg.recordStep = 0.1            ## Step size (in ms) to save data -- value from M1 cfg.py 
+cfg.recordStep = 0.1            ## Step size (in ms) to save data 
 
-cfg.recordLFP = [[100, y, 100] for y in range(0, 2000, 100)] #+[[100, 2500, 200], [100,2700,200]]
-cfg.recordLFP = [[x, 1000, 100] for x in range(100, 2200, 200)] #+[[100, 2500, 200], [100,2700,200]]
+cfg.recordLFP = [[100, y, 100] for y in range(0, 2000, 100)]
+cfg.recordLFP = [[x, 1000, 100] for x in range(100, 2200, 200)]
 #cfg.saveLFPPops =  cfg.allCorticalPops #, "IT3", "SOM3", "PV3", "VIP3", "NGF3", "ITP4", "ITS4", "IT5A", "CT5A", "IT5B", "PT5B", "CT5B", "IT6", "CT6"]
 
 # cfg.recordDipole = True
@@ -113,15 +113,14 @@ cfg.synWeightFractionENGF = [0.834, 0.166] # NGF AMPA to NMDA ratio
 #------------------------------------------------------------------------------
 # Network 
 #------------------------------------------------------------------------------
-## These values taken from M1 cfg.py (https://github.com/Neurosim-lab/netpyne/blob/development/examples/M1detailed/cfg.py)
 cfg.singleCellPops = False
 cfg.singlePop = ''
 cfg.removeWeightNorm = False
-cfg.scale = 1.0     # Is this what should be used? 
-cfg.sizeY = 2000.0 #1350.0 in M1_detailed # should this be set to 2000 since that is the full height of the column? 
-cfg.sizeX = 200.0 # 400 - This may change depending on electrode radius 
+cfg.scale = 1.0     
+cfg.sizeY = 2000.0 
+cfg.sizeX = 200.0 
 cfg.sizeZ = 200.0
-cfg.scaleDensity = 1.0 #0.075 # Should be 1.0 unless need lower cell density for test simulation or visualization
+cfg.scaleDensity = 1.0 # Should be 1.0 unless need lower cell density for test simulation or visualization
 
 
 #------------------------------------------------------------------------------
@@ -129,16 +128,16 @@ cfg.scaleDensity = 1.0 #0.075 # Should be 1.0 unless need lower cell density for
 #------------------------------------------------------------------------------
 cfg.synWeightFractionEE = [0.5, 0.5] # E->E AMPA to NMDA ratio
 cfg.synWeightFractionEI = [0.5, 0.5] # E->I AMPA to NMDA ratio
-cfg.synWeightFractionIE = [0.9, 0.1]  # SOM -> E GABAASlow to GABAB ratio (update this)
-cfg.synWeightFractionII = [0.9, 0.1]  # SOM -> E GABAASlow to GABAB ratio (update this)
+cfg.synWeightFractionIE = [0.9, 0.1]  # SOM -> E GABAASlow to GABAB ratio
+cfg.synWeightFractionII = [0.9, 0.1]  # SOM -> E GABAASlow to GABAB ratio
 
 # Cortical
 cfg.addConn = 1
 
 cfg.EEGain = 1.0
-cfg.EIGain = 1.0 # 1.8600534795309025 	
-cfg.IEGain = 1.0 #0.75
-cfg.IIGain = 1.0 #0.5
+cfg.EIGain = 1.0  	
+cfg.IEGain = 1.0 
+cfg.IIGain = 1.0 
 
 ## E/I->E/I layer weights (L1-3, L4, L5, L6)
 cfg.EELayerGain = {'1': 1.0, '2': 1.0, '3': 1.0, '4': 1.0 , '5A': 1.0, '5B': 1.0, '6': 1.0}
@@ -215,6 +214,29 @@ cfg.NetStim1 = {'pop': 'NGF1', 'ynorm': [0,2.0], 'sec': 'soma', 'loc': 0.5, 'syn
 cfg.tune = {}
 
 
+#------------------------------------------------------------------------------
+# Set the baseline model parameters (remove this to use custom parameters)
+#------------------------------------------------------------------------------
+import json
+filename = '../data/v34_batch25/trial_2142/trial_2142_cfg.json'
 
+with open(filename, 'rb') as f:
+    cfgLoad = json.load(f)['simConfig']
+    
+    updateParams = ['EEGain', 'EIGain', 'IEGain', 'IIGain',
+                    ('EICellTypeGain', 'PV'), ('EICellTypeGain', 'SOM'), ('EICellTypeGain', 'VIP'), ('EICellTypeGain', 'NGF'),
+                    ('IECellTypeGain', 'PV'), ('IECellTypeGain', 'SOM'), ('IECellTypeGain', 'VIP'), ('IECellTypeGain', 'NGF'),
+                    ('EILayerGain', '1'), ('IILayerGain', '1'),
+                    ('EELayerGain', '2'), ('EILayerGain', '2'),  ('IELayerGain', '2'), ('IILayerGain', '2'), 
+                    ('EELayerGain', '3'), ('EILayerGain', '3'), ('IELayerGain', '3'), ('IILayerGain', '3'), 
+                    ('EELayerGain', '4'), ('EILayerGain', '4'), ('IELayerGain', '4'), ('IILayerGain', '4'), 
+                    ('EELayerGain', '5A'), ('EILayerGain', '5A'), ('IELayerGain', '5A'), ('IILayerGain', '5A'), 
+                    ('EELayerGain', '5B'), ('EILayerGain', '5B'), ('IELayerGain', '5B'), ('IILayerGain', '5B'), 
+                    ('EELayerGain', '6'), ('EILayerGain', '6'), ('IELayerGain', '6'), ('IILayerGain', '6'),
+                    'thalamoCorticalGain', 'intraThalamicGain', 'EbkgThalamicGain', 'IbkgThalamicGain', 'wmat']
 
-
+    for p in updateParams:
+        if isinstance(p, tuple):
+            cfg.update({p: cfgLoad[p[0]][p[1]]})
+        else:
+            cfg.update({p: cfgLoad[p]})

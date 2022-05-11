@@ -11,22 +11,32 @@ Dura-Bernal S, Griffith EY, Barczak A, O’Connell MN, McGinnis T, Schroeder C, 
 This folder includes all the source code of the NetPyNE model of macaque thalamocortical circuits. 
 It requires NEURON with Python and MPI support, and NetPyNE. See here installation instructions: http://netpyne.org/install.html#  
 
-1. From /sim run `nrnivmodl ../mod`. This should create a directory called x86_64. 
-2. To run type: `./runsim [num_proc]' or the equivalent `mpiexec -np [num_proc] nrniv -python -mpi init.py`
+The first required step is compiling the NMODL files. This requires running the following command:
+From /sim run `nrnivmodl ../mod`. This should create a directory called x86_64. 
+
+To run the full model version, run the following command: `./runsim [num_proc]` or the equivalent `mpiexec -np [num_proc] nrniv -python -mpi init.py`
+
+To run a a batch of simulations via SLURM on high performance computing (HPC) systems use: `python batch.py`
+
+To run a demo version use `python init_demo.py`. This will run a reduced toy auditory thalamocortical model with 5% cell density and simulation duration of 500ms. It will generate an output spiking raster plot and LFP plot figures. Expected run time for demo on a "normal" desktop computer is 150 seconds.
 
 ## Overview of file structure:
 
-* /init.py: Main executable; calls functions from other modules. Sets what parameter file to use.
+* /init.py: Main executable to create, simulate and analyze the full model.
 
-* /netParams.py: Network parameters
+* /netParams.py: Network model parameters following the NetPyNE specification. For details see: http://netpyne.org
 
-* /cfg.py: Simulation configuration
+* /cfg.py: Simulation configuration following the NetPyNE specification. For details see: http://netpyne.org
 
-* /cells: source .py, .hoc, .json or .pkl files for the different cell types used in the model; these will be imported into netpyne
+* /init_demo.py: Demo executable to create, simulate and analyze a toy model with 5% cell density.
 
-* /conns: source .py, .json or .pkl files for the network connectivity; these will be imported into netpyne
+* /cfg_demo.py: Simulation configuration for the toy demo model.
 
-* /mod: NMODL files containing the ionic channel and synaptic mechanisms used in the model 
+* /cells: source .py, .hoc, .json or .pkl files for the different cell types used in the model; these will be imported into NetPyNE.
+
+* /conns: source .py, .json or .pkl files for the network connectivity; these will be imported into NetPyNE.
+
+* /mod: NMODL files containing the ionic channel and synaptic mechanisms used in the model.
 
 
 For further information please contact: salvador.dura-bernal@downstate.edu, erica.griffith@downstate.edu and/or samuel.neymotin@nki.rfmh.org

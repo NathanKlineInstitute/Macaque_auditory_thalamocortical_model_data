@@ -210,7 +210,7 @@ def custom_spont(filename):
     initCfg['saveCellSecs'] = False
     initCfg['saveCellConns'] = False
     
-    # from prev - best of 50% cell density
+    # from prev 
     updateParams = ['EEGain', 'EIGain', 'IEGain', 'IIGain',
                     ('EICellTypeGain', 'PV'), ('EICellTypeGain', 'SOM'), ('EICellTypeGain', 'VIP'), ('EICellTypeGain', 'NGF'),
                     ('IECellTypeGain', 'PV'), ('IECellTypeGain', 'SOM'), ('IECellTypeGain', 'VIP'), ('IECellTypeGain', 'NGF'),
