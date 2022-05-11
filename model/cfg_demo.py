@@ -22,8 +22,8 @@ cfg = specs.SimConfig()
 #------------------------------------------------------------------------------
 # Run parameters
 #------------------------------------------------------------------------------
-cfg.duration = 1.0*1e3			## Duration of the sim, in ms 
-cfg.dt = 0.05                   ## Internal Integration Time Step 
+cfg.duration = 0.5*1e3			## Duration of the sim, in ms
+cfg.dt = 0.05                   ## Internal Integration Time Step  
 cfg.verbose = 0         	## Show detailed messages
 cfg.hParams['celsius'] = 37
 cfg.createNEURONObj = 1
@@ -37,7 +37,7 @@ cfg.cache_efficient = True
 cfg.printRunTime = 0.1
 cfg.oneSynPerNetcon = False
 cfg.includeParamsLabel = False
-cfg.printPopAvgRates = [500, cfg.duration]
+cfg.printPopAvgRates = [0, cfg.duration]
 
 cfg.validateNetParams = True
 
@@ -51,9 +51,9 @@ cfg.allThalPops = ['TC', 'TCM', 'HTC', 'IRE', 'IREM', 'TI', 'TIM', 'IC']
 alltypes = ['NGF1', 'IT2', 'PV2', 'SOM2', 'VIP2', 'ITS4', 'PT5B', 'TC', 'HTC', 'IRE', 'TI']
 
 cfg.recordTraces = {'V_soma': {'sec':'soma', 'loc': 0.5, 'var':'v'}}  ## Dict with traces to record 
-cfg.recordStim = False			## Seen in M1 cfg.py
-cfg.recordTime = False  		## SEen in M1 cfg.py 
-cfg.recordStep = 0.1            ## Step size (in ms) to save data 
+cfg.recordStim = False			
+cfg.recordTime = False  		 
+cfg.recordStep = 0.1            ## Step size (in ms) to save data  
 
 cfg.recordLFP = [[100, y, 100] for y in range(0, 2000, 100)]
 cfg.recordLFP = [[x, 1000, 100] for x in range(100, 2200, 200)]
@@ -68,8 +68,8 @@ cfg.recordLFP = [[x, 1000, 100] for x in range(100, 2200, 200)]
 # Saving
 #------------------------------------------------------------------------------
 
-cfg.simLabel = 'v31_tune3' 
-cfg.saveFolder = 'data/v31_manualTune'                	## Set file output name
+cfg.simLabel = 'demo' 
+cfg.saveFolder = '.'                	## Set file output name
 cfg.savePickle = True         	## Save pkl file
 cfg.saveJson = False           	## Save json file
 cfg.saveDataInclude = ['simData', 'simConfig', 'netParams', 'net'] 
@@ -116,11 +116,11 @@ cfg.synWeightFractionENGF = [0.834, 0.166] # NGF AMPA to NMDA ratio
 cfg.singleCellPops = False
 cfg.singlePop = ''
 cfg.removeWeightNorm = False
-cfg.scale = 1.0     
+cfg.scale = 1.0      
 cfg.sizeY = 2000.0 
-cfg.sizeX = 200.0 
+cfg.sizeX = 200.0   
 cfg.sizeZ = 200.0
-cfg.scaleDensity = 1.0 # Should be 1.0 unless need lower cell density for test simulation or visualization
+cfg.scaleDensity = 0.05 # Should be 1.0 unless need lower cell density for test simulation or visualization
 
 
 #------------------------------------------------------------------------------
@@ -128,14 +128,14 @@ cfg.scaleDensity = 1.0 # Should be 1.0 unless need lower cell density for test s
 #------------------------------------------------------------------------------
 cfg.synWeightFractionEE = [0.5, 0.5] # E->E AMPA to NMDA ratio
 cfg.synWeightFractionEI = [0.5, 0.5] # E->I AMPA to NMDA ratio
-cfg.synWeightFractionIE = [0.9, 0.1]  # SOM -> E GABAASlow to GABAB ratio
-cfg.synWeightFractionII = [0.9, 0.1]  # SOM -> E GABAASlow to GABAB ratio
+cfg.synWeightFractionIE = [0.9, 0.1]  # SOM -> E GABAASlow to GABAB ratio (update this)
+cfg.synWeightFractionII = [0.9, 0.1]  # SOM -> E GABAASlow to GABAB ratio (update this)
 
 # Cortical
 cfg.addConn = 1
 
 cfg.EEGain = 1.0
-cfg.EIGain = 1.0  	
+cfg.EIGain = 1.0 	
 cfg.IEGain = 1.0 
 cfg.IIGain = 1.0 
 
@@ -207,36 +207,10 @@ cfg.addNetStim = 0
 ## LAYER 1
 cfg.NetStim1 = {'pop': 'NGF1', 'ynorm': [0,2.0], 'sec': 'soma', 'loc': 0.5, 'synMech': ['AMPA'], 'synMechWeightFactor': [1.0], 'start': 0, 'interval': 1000.0/60.0, 'noise': 0.0, 'number': 0.0, 'weight': 10.0, 'delay': 0}
 
-# ## LAYER 2
-# cfg.NetStim2 = {'pop': 'IT2',  'ynorm': [0,1], 'sec': 'soma', 'loc': 0.5, 'synMech': ['AMPA'], 'synMechWeightFactor': [1.0], 'start': 0, 'interval': 1000.0/60.0, 'noise': 0.0, 'number': 60.0, 	'weight': 10.0, 'delay': 0}
-
 
 cfg.tune = {}
 
 
-#------------------------------------------------------------------------------
-# Set the baseline model parameters (remove this to use custom parameters)
-#------------------------------------------------------------------------------
-import json
-filename = '../data/v34_batch25/trial_2142/trial_2142_cfg.json'
 
-with open(filename, 'rb') as f:
-    cfgLoad = json.load(f)['simConfig']
-    
-    updateParams = ['EEGain', 'EIGain', 'IEGain', 'IIGain',
-                    ('EICellTypeGain', 'PV'), ('EICellTypeGain', 'SOM'), ('EICellTypeGain', 'VIP'), ('EICellTypeGain', 'NGF'),
-                    ('IECellTypeGain', 'PV'), ('IECellTypeGain', 'SOM'), ('IECellTypeGain', 'VIP'), ('IECellTypeGain', 'NGF'),
-                    ('EILayerGain', '1'), ('IILayerGain', '1'),
-                    ('EELayerGain', '2'), ('EILayerGain', '2'),  ('IELayerGain', '2'), ('IILayerGain', '2'), 
-                    ('EELayerGain', '3'), ('EILayerGain', '3'), ('IELayerGain', '3'), ('IILayerGain', '3'), 
-                    ('EELayerGain', '4'), ('EILayerGain', '4'), ('IELayerGain', '4'), ('IILayerGain', '4'), 
-                    ('EELayerGain', '5A'), ('EILayerGain', '5A'), ('IELayerGain', '5A'), ('IILayerGain', '5A'), 
-                    ('EELayerGain', '5B'), ('EILayerGain', '5B'), ('IELayerGain', '5B'), ('IILayerGain', '5B'), 
-                    ('EELayerGain', '6'), ('EILayerGain', '6'), ('IELayerGain', '6'), ('IILayerGain', '6'),
-                    'thalamoCorticalGain', 'intraThalamicGain', 'EbkgThalamicGain', 'IbkgThalamicGain', 'wmat']
 
-    for p in updateParams:
-        if isinstance(p, tuple):
-            cfg.update({p: cfgLoad[p[0]][p[1]]})
-        else:
-            cfg.update({p: cfgLoad[p]})
+
