@@ -24,7 +24,7 @@ The computational model has the following software dependencies:
 - UR_EAR 2.0 
 
 The experimental and model data analysis has the following software dependencies:
-- MATLAB, v9.8 R2020a 
+- MATLAB v9.3 (64bit) 2017b
 - OEvent v51cc9b
 
 The computational model and analysis code has been tested on Mac OS 12.1 and Linux Ubuntu 16.04

@@ -14,6 +14,8 @@ It requires NEURON with Python and MPI support, and NetPyNE. See here installati
 The first required step is compiling the NMODL files. This requires running the following command:
 From /sim run `nrnivmodl ../mod`. This should create a directory called x86_64. 
 
+The next step requires downloading the model data, see instructions in data/README.md.
+
 To run the full model version, run the following command: `./runsim [num_proc]` or the equivalent `mpiexec -np [num_proc] nrniv -python -mpi init.py`
 
 To run a a batch of simulations via SLURM on high performance computing (HPC) systems use: `python batch.py`
