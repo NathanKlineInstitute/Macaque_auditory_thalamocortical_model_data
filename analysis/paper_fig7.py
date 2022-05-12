@@ -3,72 +3,62 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-def sortSubjectFiles(waveletPath, sim):
-	### waveletPath: str --> path to directory with wavelet files
+def getSubjectNames(dataPath, sim):
+	### dataPath: str --> path to directory with wavelet files
 	### sim: bool --> to decide which prefix to use for sorting 
 
-	os.chdir(waveletPath)
-	subjectNames = os.listdir()
+	os.chdir(dataPath)
+	dataDirContents = os.listdir()
 
-	subjFiles = []
+	subjects = []
 
 	if sim:
-		filePrefix = 'v34_batch57_'
-		splitStr = '_data'
+		prefix = 'v34_batch57_'
 	else:
-		filePrefix = '2-'
-		splitStr = '_'
+		prefix = '2-'
 
-	for name in subjectNames:
-		if filePrefix in name:
-			subjFiles.append(name)
+	for obj in dataDirContents:
+		if prefix in obj and os.path.isdir(obj):
+			subjects.append(obj)
 
-	subjFiles.sort()
-	subjSubjects = {}
-	for subjFile in subjFiles:
-		subjName = subjFile.split(splitStr)[0]
-		if subjName not in subjSubjects.keys():
-			subjSubjects[subjName] = []
-		subjSubjects[subjName].append(subjFile)
+	return subjects
+# def getSimLayers():
+# 	layers = {'supra':[0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 'gran':[10, 11], 'infra':[12, 13, 14, 15, 16, 17, 18, 19]} ## NETPYNE SIMS
+# 	return layers
+# def getNHPLayers(dataPath, subjects):
+# 	### dataPath: str
+# 	### subjects: list or dict (probably dict) -- but timeRange == 1 if dict, 0 if not 
 
-	return subjSubjects
-def getSimLayers():
-	layers = {'supra':[0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 'gran':[10, 11], 'infra':[12, 13, 14, 15, 16, 17, 18, 19]} ## NETPYNE SIMS
-	return layers
-def getNHPLayers(waveletPath, subjects):
-	### waveletPath: str
-	### subjects: list or dict (probably dict) -- but timeRange == 1 if dict, 0 if not 
+# 	layers = {} # {'supra': [], 'gran': [], 'infra': []}		# have to reset this for each NHP subject 
+# 	regions = ['supra', 'gran', 'infra']
 
-	layers = {} # {'supra': [], 'gran': [], 'infra': []}		# have to reset this for each NHP subject 
-	regions = ['supra', 'gran', 'infra']
+# 	if type(subjects) is dict:
+# 		for subject in subjects:
+# 			layers[subject] = {}
 
-	if type(subjects) is dict:
-		for subject in subjects:
-			layers[subject] = {}
+# 			for region in regions:
+# 				layers[subject][region] = []
 
-			for region in regions:
-				layers[subject][region] = []
+# 			channels = []
+# 			allSubFiles = os.listdir(dataPath + subjects[subject][0])
+# 			for n in allSubFiles:
+# 				if 'chan_' in n:
+# 					channels.append(int(n.split('_')[-1]))
+# 			channels.sort()
 
-			channels = []
-			allSubFiles = os.listdir(waveletPath + subjects[subject][0])
-			for n in allSubFiles:
-				if 'chan_' in n:
-					channels.append(int(n.split('_')[-1]))
-			channels.sort()
+# 			for layerKey in layers[subject]:
+# 				if layerKey == 'supra':
+# 					layers[subject][layerKey].append(channels[0])
+# 					layers[subject][layerKey].append(channels[1])
+# 				elif layerKey == 'gran':
+# 					layers[subject][layerKey].append(channels[2])
+# 				elif layerKey == 'infra':
+# 					layers[subject][layerKey].append(channels[-2])
+# 					layers[subject][layerKey].append(channels[-1])
 
-			for layerKey in layers[subject]:
-				if layerKey == 'supra':
-					layers[subject][layerKey].append(channels[0])
-					layers[subject][layerKey].append(channels[1])
-				elif layerKey == 'gran':
-					layers[subject][layerKey].append(channels[2])
-				elif layerKey == 'infra':
-					layers[subject][layerKey].append(channels[-2])
-					layers[subject][layerKey].append(channels[-1])
+# 	# elif type(subjects) is list:  # FILL THIS IN
 
-	# elif type(subjects) is list:  # FILL THIS IN
-
-	return layers 
+# 	return layers 
 def getStats(df, evidx,align='bywaveletpeak',verbose=False):
 	dur,chan,hasbefore,hasafter,windowidx,offidx,left,right,minT,maxT,peakT,minF,maxF,peakF,avgpowevent,ncycle,WavePeakT,WaveTroughT,WaveletPeakT,WaveletLeftTroughT,WaveletRightTroughT,w2,left,right,band,alignoffset,filtsigcor,Foct,cycnpeak,ERPscore,OSCscore = geteventprop(df, evidx, align)   #= self.getallprop(evidx,align) 
 
@@ -76,11 +66,11 @@ def getStats(df, evidx,align='bywaveletpeak',verbose=False):
 		return dur,chan,hasbefore,hasafter,windowidx,offidx,left,right,minT,maxT,peakT,minF,maxF,peakF,avgpowevent,ncycle,WavePeakT,WaveTroughT,WaveletPeakT,WaveletLeftTroughT,WaveletRightTroughT,w2,left,right,band,alignoffset,filtsigcor,Foct,cycnpeak,ERPscore,OSCscore
 	else:
 		return dur,peakF,ncycle,band
-def getPropDicts(subjects, frequencyBands, waveletPath, propType='all', sim=1):
-	### subjects: list (if no timeRange) or dict (if broken up into timeRanges)
+def getPropDicts(subjects, frequencyBands, dataPath, propType='all'): 
+	### subjects: list
 	### layers: dict
 	### frequencyBands: list
-	### waveletPath: str
+	### dataPath: str
 	### propType: str ('dur', 'peakF', 'ncycles', 'all')
 	### timeRange: bool 
 
@@ -88,158 +78,49 @@ def getPropDicts(subjects, frequencyBands, waveletPath, propType='all', sim=1):
 	peakFDict = {}		# establish a dict for wavelet peakF values 
 	ncycleDict = {}		# establish a dict for wavelet ncycles values 
 
-	if sim:  # NetPyNE sim data
-		layers = getSimLayers()
+	regions = ['supra', 'gran', 'infra']
 
-		if type(subjects) is list:
-			for subject in subjects:
-				durDict[subject] = {}
-				peakFDict[subject] = {}
-				ncycleDict[subject] = {}
+	for subject in subjects:
+		durDict[subject] = {}
+		peakFDict[subject] = {}
+		ncycleDict[subject] = {}
 
-				for layerKey in layers:
-					durDict[subject][layerKey] = {}
-					peakFDict[subject][layerKey] = {}
-					ncycleDict[subject][layerKey] = {}
+		for region in regions:
+			durDict[subject][region] = {}
+			peakFDict[subject][region] = {}
+			ncycleDict[subject][region] = {}
 
-					for band in frequencyBands:
-						durDict[subject][layerKey][band] = []
-						peakFDict[subject][layerKey][band] = []
-						ncycleDict[subject][layerKey][band] = []
+			for band in frequencyBands:
+				durDict[subject][region][band] = []
+				peakFDict[subject][region][band] = []
+				ncycleDict[subject][region][band] = []
 
-					for chan in layers[layerKey]:
-						allChanFiles = os.listdir(waveletPath + subject + '/chan_' + str(chan))
-						pklFiles = []
-						for file in allChanFiles:
-							if '.pkl' in file:
-								pklFiles.append(file)   ## now pklFiles is a list of all the .pkl files in a particular chan subdir 
-						#print(pklFiles)
+				allRegionFiles = os.listdir(dataPath + subject + '/' + region)
+				pklFiles = []
+				for file in allRegionFiles:
+					if '.pkl' in file:
+						pklFiles.append(file)
 
-						for pklFile in pklFiles:
-							#print(pklFile)  # ---> print line for testing
-							pklBand = pklFile.split('_')[-1][:-4]
-							for band in frequencyBands:
-								if band == pklBand:  	# this prevents gamma / hgamma double-counting (excluding hgamma for now!)
-									dfsPkl = pd.read_pickle(waveletPath + subject + '/chan_' + str(chan) + '/' + pklFile)
-									#print('band = ' + str(band)) # ---> print line for testing
-									#print('chan = ' + str(chan)) # ---> print line for testing
-									for idx in dfsPkl.index:
-										dur, peakF, ncycle, band = getStats(df = dfsPkl, evidx = idx, align='bywaveletpeak') 
-										durDict[subject][layerKey][band].append(dur)
-										peakFDict[subject][layerKey][band].append(peakF)
-										ncycleDict[subject][layerKey][band].append(ncycle)
-
-		elif type(subjects) is dict:
-			for subject in subjects:   # here subjects is a dict, e.g. nhpSubjects = {'2-rb045046026': ['2-rb045046026_timeRange_0_40', '2-rb045046026_timeRange_120_160', '2-rb045046026_timeRange_160_200']}
-				durDict[subject] = {}
-				peakFDict[subject] = {}
-				ncycleDict[subject] = {}
-
-				for layerKey in layers:
-					durDict[subject][layerKey] = {}
-					peakFDict[subject][layerKey] = {}
-					ncycleDict[subject][layerKey] = {}
-
-					for band in frequencyBands:
-						durDict[subject][layerKey][band] = []
-						peakFDict[subject][layerKey][band] = []
-						ncycleDict[subject][layerKey][band] = []
-
-					## Now get pklFiles from each channel 
-					for chan in layers[layerKey]:
-						for tRange in subjects[subject]:
-							# print(timeRange)  # <-- print line for testing 
-							allChanFiles = os.listdir(waveletPath + tRange + '/chan_' + str(chan))
-							pklFiles = []
-							for file in allChanFiles:
-								if '.pkl' in file:
-									pklFiles.append(file)   ## now pklFiles is a list of all the .pkl files in a particular chan subdir 
-							#print(pklFiles)		# <-- print line for testing 
-
-							for pklFile in pklFiles:
-								pklBand = pklFile.split('_')[-1][:-4]
-								for band in frequencyBands:
-									if band == pklBand:  	# this prevents gamma / hgamma double-counting (excluding hgamma for now!)
-										dfsPkl = pd.read_pickle(waveletPath + tRange + '/chan_' + str(chan) + '/' + pklFile)
-										#print('band = ' + str(band)) # ---> print line for testing
-										#print('chan = ' + str(chan)) # ---> print line for testing
-										for idx in dfsPkl.index:
-											dur, peakF, ncycle, band = getStats(df = dfsPkl, evidx = idx, align='bywaveletpeak') 
-											durDict[subject][layerKey][band].append(dur)
-											peakFDict[subject][layerKey][band].append(peakF)
-											ncycleDict[subject][layerKey][band].append(ncycle)
-
-	else:   # NHP data 
-		if type(subjects) is dict:
-			layers = getNHPLayers(waveletPath,subjects)
-
-			for subject in subjects:
-				durDict[subject] = {}
-				peakFDict[subject] = {}
-				ncycleDict[subject] = {}
-
-				for layerKey in layers[subject]:
-					durDict[subject][layerKey] = {}
-					peakFDict[subject][layerKey] = {}
-					ncycleDict[subject][layerKey] = {}
-
-					for band in frequencyBands:
-						durDict[subject][layerKey][band] = []
-						peakFDict[subject][layerKey][band] = []
-						ncycleDict[subject][layerKey][band] = []
-
-					## Now get pklFiles from each channel 
-					for chan in layers[subject][layerKey]:
-						for tRange in subjects[subject]:
-							# print(timeRange)  # <-- print line for testing 
-							allChanFiles = os.listdir(waveletPath + tRange + '/chan_' + str(chan))
-							pklFiles = []
-							for file in allChanFiles:
-								if '.pkl' in file:
-									pklFiles.append(file) 
-
-							for pklFile in pklFiles:
-								pklBand = pklFile.split('_')[-1][:-4]
-								for band in frequencyBands:
-									if band == pklBand:  	# this prevents gamma / hgamma double-counting (excluding hgamma for now!)
-										dfsPkl = pd.read_pickle(waveletPath + tRange + '/chan_' + str(chan) + '/' + pklFile)
-										#print('band = ' + str(band)) # ---> print line for testing
-										#print('chan = ' + str(chan)) # ---> print line for testing
-										for idx in dfsPkl.index:
-											dur, peakF, ncycle, band = getStats(df = dfsPkl, evidx = idx, align='bywaveletpeak') 
-											durDict[subject][layerKey][band].append(dur)
-											peakFDict[subject][layerKey][band].append(peakF)
-											ncycleDict[subject][layerKey][band].append(ncycle)
+				for pklFile in pklFiles:
+					pklBand = pklFile.split('_')[-1][:-4]
+					# for band in frequencyBands:
+					if band == pklBand:  	# this prevents gamma / hgamma double-counting
+						dfsPkl = pd.read_pickle(dataPath + subject + '/' + region + '/' + pklFile)
+						for idx in dfsPkl.index:
+							dur, peakF, ncycle, band = getStats(df = dfsPkl, evidx = idx, align='bywaveletpeak') 
+							durDict[subject][region][band].append(dur)
+							peakFDict[subject][region][band].append(peakF)
+							ncycleDict[subject][region][band].append(ncycle)
 
 
-		elif type(subjects) is list:
-			print('THIS CONDITION IS NOT COMPLETED YET!!!')
-
-
-	if sim:
-		durDictSim = durDict
-		peakFDictSim = peakFDict
-		ncycleDictSim = ncycleDict
-		if propType == 'all':
-			return durDictSim, peakFDictSim, ncycleDictSim
-		elif propType == 'dur':
-			return durDictSim
-		elif propType == 'peakF':
-			return peakFDictSim
-		elif propType == 'ncycle':
-			return ncycleDictSim 
-	else:
-		durDictNHP = durDict
-		peakFDictNHP = peakFDict
-		ncycleDictNHP = ncycleDict
-		if propType == 'all':
-			return durDictNHP, peakFDictNHP, ncycleDictNHP
-		elif propType == 'dur':
-			return durDictNHP
-		elif propType == 'peakF':
-			return peakFDictNHP
-		elif propType == 'ncycle':
-			return ncycleDictNHP 
+	if propType == 'all':
+		return durDict, peakFDict, ncycleDict
+	elif propType == 'dur':
+		return durDict
+	elif propType == 'peakF':
+		return peakFDict
+	elif propType == 'ncycle':
+		return ncycleDict
 def getPropStats(propDict, region, frequencyBand, avg=1):
 	### propDict: dict
 	### region: str --> 'all', 'supra', 'gran', 'infra'
@@ -270,7 +151,6 @@ def getPropLists(propDict, regions, frequencyBands):
 	### regions: list --> e.g. ['supra', 'gran', 'infra']
 	### frequencyBands: list --> e.g. ['alpha', 'beta', 'delta', 'theta', 'gamma']
 	### avg: bool 
-
 
 	propLists = {}
 
@@ -382,20 +262,29 @@ def statsBoxplotALL(frequencyBands, simListsDict, nhpListsDict, dataCategories, 
 	fig.suptitle('COMPARISON OF OSCILLATION EVENT PROPERTIES', fontsize=14, fontweight='bold', horizontalalignment='center', y=0.95)
 
 	plt.show()
+
 def plotStats():
-	simSubjects = sortSubjectFiles(waveletPath=waveletPath, sim=1)
-	nhpSubjects = sortSubjectFiles(waveletPath=waveletPath, sim=0)
+	simPath = dataPathPrefix + 'v34_batch57/'
+	nhpPath = dataPathPrefix + 'NHPdata/spont/'
+
+	simSubjects = getSubjectNames(dataPath=simPath, sim=1)
+	nhpSubjects = getSubjectNames(dataPath=nhpPath, sim=0)
+
+	# print('simSubjects: ' + str(simSubjects)) ## TESTING LINES --> WORKS
+	# print('nhpSubjects: ' + str(nhpSubjects)) ## TESTING LINES --> WORKS
+
 
 	### Frequency bands & region ###
-	frequencyBands = ['delta', 'theta', 'alpha', 'beta', 'gamma']	# , 'hgamma'] ## DON'T DO HGAMMA FOR NOW 
+	frequencyBands = ['delta', 'theta', 'alpha', 'beta', 'gamma']
 	regions = ['supra', 'gran', 'infra', 'all']  
+
 
 
 	###########################
 	#### SIM WAVELET STATS ####
 	###########################
 
-	durDictSim, peakFDictSim, ncycleDictSim = getPropDicts(simSubjects, frequencyBands, waveletPath, propType='all', sim=1)
+	durDictSim, peakFDictSim, ncycleDictSim = getPropDicts(simSubjects, frequencyBands, simPath, propType='all')
 
 	durSimLists = getPropLists(durDictSim, regions, frequencyBands)
 	peakFSimLists = getPropLists(peakFDictSim, regions, frequencyBands)
@@ -405,11 +294,11 @@ def plotStats():
 
 
 
-	##########################
-	### NHP WAVELET STATS ####
-	##########################
+	# ##########################
+	# ### NHP WAVELET STATS ####
+	# ##########################
 
-	durDictNHP, peakFDictNHP, ncycleDictNHP = getPropDicts(nhpSubjects, frequencyBands, waveletPath, propType='all', sim=0)
+	durDictNHP, peakFDictNHP, ncycleDictNHP = getPropDicts(nhpSubjects, frequencyBands, nhpPath, propType='all')
 
 	durNHPLists = getPropLists(durDictNHP, regions, frequencyBands)
 	peakFNHPLists = getPropLists(peakFDictNHP, regions, frequencyBands)
@@ -418,13 +307,11 @@ def plotStats():
 	nhpListsDict = {'dur': durNHPLists, 'peakF': peakFNHPLists, 'nCycle': ncycleNHPLists}
 
 
-
 	#### GENERATE BOXPLOTS ####
-	statsBoxplotALL(frequencyBands, simListsDict=simListsDict, nhpListsDict=nhpListsDict, dataCategories=['dur', 'peakF', 'nCycle'], figsize=None, colors=None)  ### <-- regions can take 'all' or no? 
-
+	statsBoxplotALL(frequencyBands, simListsDict=simListsDict, nhpListsDict=nhpListsDict, dataCategories=['dur', 'peakF', 'nCycle'], figsize=None, colors=None)
 
 ######### PATH TO DATA DIRECTORY #########
-waveletPath = '../data/'  ## NOTE: Change this to wherever Macaque_auditory_thalamocortical_model_data/data directory is located 
+dataPathPrefix = '/Users/ericagriffith/Desktop/NEUROSIM/Macaque_auditory_thalamocortical_model_data/data/'# '../data/'  ## NOTE: Change this to wherever Macaque_auditory_thalamocortical_model_data/data directory is located 
 
 
 # --------------------------
