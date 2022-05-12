@@ -228,7 +228,7 @@ def statsBoxplotALL(frequencyBands, simListsDict, nhpListsDict, dataCategories, 
 
 def plotStats():
 	simPath = dataPathPrefix + 'v34_batch57/'
-	nhpPath = dataPathPrefix + 'NHPdata/spont/'
+	nhpPath = dataPathPrefix + 'NHP_data/spont/'
 
 	simSubjects = getSubjectNames(dataPath=simPath, sim=1)
 	nhpSubjects = getSubjectNames(dataPath=nhpPath, sim=0)
