@@ -22,43 +22,6 @@ def getSubjectNames(dataPath, sim):
 			subjects.append(obj)
 
 	return subjects
-# def getSimLayers():
-# 	layers = {'supra':[0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 'gran':[10, 11], 'infra':[12, 13, 14, 15, 16, 17, 18, 19]} ## NETPYNE SIMS
-# 	return layers
-# def getNHPLayers(dataPath, subjects):
-# 	### dataPath: str
-# 	### subjects: list or dict (probably dict) -- but timeRange == 1 if dict, 0 if not 
-
-# 	layers = {} # {'supra': [], 'gran': [], 'infra': []}		# have to reset this for each NHP subject 
-# 	regions = ['supra', 'gran', 'infra']
-
-# 	if type(subjects) is dict:
-# 		for subject in subjects:
-# 			layers[subject] = {}
-
-# 			for region in regions:
-# 				layers[subject][region] = []
-
-# 			channels = []
-# 			allSubFiles = os.listdir(dataPath + subjects[subject][0])
-# 			for n in allSubFiles:
-# 				if 'chan_' in n:
-# 					channels.append(int(n.split('_')[-1]))
-# 			channels.sort()
-
-# 			for layerKey in layers[subject]:
-# 				if layerKey == 'supra':
-# 					layers[subject][layerKey].append(channels[0])
-# 					layers[subject][layerKey].append(channels[1])
-# 				elif layerKey == 'gran':
-# 					layers[subject][layerKey].append(channels[2])
-# 				elif layerKey == 'infra':
-# 					layers[subject][layerKey].append(channels[-2])
-# 					layers[subject][layerKey].append(channels[-1])
-
-# 	# elif type(subjects) is list:  # FILL THIS IN
-
-# 	return layers 
 def getStats(df, evidx,align='bywaveletpeak',verbose=False):
 	dur,chan,hasbefore,hasafter,windowidx,offidx,left,right,minT,maxT,peakT,minF,maxF,peakF,avgpowevent,ncycle,WavePeakT,WaveTroughT,WaveletPeakT,WaveletLeftTroughT,WaveletRightTroughT,w2,left,right,band,alignoffset,filtsigcor,Foct,cycnpeak,ERPscore,OSCscore = geteventprop(df, evidx, align)   #= self.getallprop(evidx,align) 
 
