@@ -17,10 +17,10 @@ def getWaveletInfo(freqBand, based, verbose=0):
 	## verbose: bool --> if 0, default to only putting out timeRange and dataFile, if 1 --> include channel as well 
 
 	waveletInfo = {
-	'delta': {'dataFile': 'A1_v34_batch65_v34_batch65_0_0_data.pkl', 'timeRange': [1480, 2520], 'channel': 14},
-	'beta': {'dataFile': 'A1_v34_batch67_v34_batch67_0_0_data.pkl',	'timeRange': [456, 572], 'channel': 14}, 
-	'alpha': {'dataFile': 'A1_v34_batch67_v34_batch67_0_0_data.pkl', 'timeRange': [3111, 3325], 'channel': 9}, 
-	'theta': {'dataFile': 'A1_v34_batch67_v34_batch67_1_1_data.pkl', 'timeRange': [2785, 3350], 'channel': 8}}
+	'delta': {'dataFile': 'v34_batch57_3_4/A1_v34_batch65_v34_batch65_0_0_data.pkl', 'timeRange': [1480, 2520], 'channel': 14},
+	'beta': {'dataFile': 'v34_batch57_3_2/A1_v34_batch67_v34_batch67_0_0_data.pkl',	'timeRange': [456, 572], 'channel': 14}, 
+	'alpha': {'dataFile': 'v34_batch57_3_2/A1_v34_batch67_v34_batch67_0_0_data.pkl', 'timeRange': [3111, 3325], 'channel': 9}, 
+	'theta': {'dataFile': 'v34_batch57_3_3/A1_v34_batch67_v34_batch67_1_1_data.pkl', 'timeRange': [2785, 3350], 'channel': 8}}
 
 	timeRange = waveletInfo[freqBand]['timeRange']
 	dataFileNoPath = waveletInfo[freqBand]['dataFile']
@@ -1358,8 +1358,9 @@ def plotSpikePanels(based):
 	plt.show()
 
 
-### define dataFile here -- rather than using getWaveletInfo perhaps? 
-based = '../data/v34_batch57/' #'/Users/ericagriffith/Desktop/NEUROSIM/A1/data/simDataFiles/spont/' ## change this 
+
+####### DATA DIRECTORY ####### 
+based = '../data/v34_batch57/'  # Change this if necessary with path to data dir 
 
 
 
