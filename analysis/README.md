@@ -17,11 +17,17 @@ Some analysis functions requires NetPyNE; see installations instructions here: h
 
 * paper_figs.py: Python source code to generate the results in paper figures 1 to 5.
 
+* paper_fig6.py: Python source code to generate figure 6. 
+
+* paper_fig7.py: Python source code to generate figure 7. 
+
+* paper_fig8.py: Python source code to generate figure 8. 
+
 * expDataAnalysis.py: Supporting source code used by paper_figs.py to analyze the experimental data.
 
 * optunaAnalysis.py: Python source code to analyze the model parameter optimization results.
 
-* utils.py, downsample.py and filter.py: Python helper functions.
+* utils.py, downsample.py, filter.py and morlet.py: Python helper functions.
 
 
 For further information please contact: salvador.dura-bernal@downstate.edu, erica.griffith@downstate.edu and/or samuel.neymotin@nki.rfmh.org
