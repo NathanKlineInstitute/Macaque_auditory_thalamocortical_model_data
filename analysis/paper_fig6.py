@@ -258,7 +258,7 @@ class eventviewer():
     ### reset xlim on bottom panel (CSD waveform)
     ax1 = self.lax[1]
     ax1.set_xlim((xl))
-    ####### TEST LINES FOR SEEING IF CAN FIX COLORBAR RESIZING of top plot (make top and bottom same size)
+    ####### These lines will insert an invisible colorbar on the time series plot in order to match the size of the spectrogram
     divider1=make_axes_locatable(ax1)
     cax1=divider1.append_axes('right',size='3%', pad=0.2)
     cax1.axis('off')
