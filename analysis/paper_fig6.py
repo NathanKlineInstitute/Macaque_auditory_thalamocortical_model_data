@@ -5,6 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from morlet import MorletSpec
 import os 
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+import matplotlib.ticker  ## for colorbar 
 
 
 
@@ -129,15 +131,15 @@ class eventviewer():
   def setupax (self):
     # setup axes
     self.lax = [self.fig.add_subplot(self.nrow,1,i+1) for i in range(self.nrow)]
-    self.lax[-1].set_xlabel('Time (ms)',fontsize=10)
-    self.lax[-1].tick_params(labelsize=8)
+    self.lax[-1].set_xlabel('Time (ms)',fontsize=12)#fontsize=10)
+    self.lax[-1].tick_params(labelsize=10)#8)
     if self.MUA is not None:
       self.lax[-1].set_ylabel('MUA') # MUA is filtered, rectified version of the LFP, so its units should be mV?
-      self.lax[-2].set_ylabel(r'CSD ($mV/mm^2$)',fontsize=10)
+      self.lax[-2].set_ylabel(r'CSD ($mV/mm^2$)',fontsize=12)#fontsize=10)
     else:
-      self.lax[-1].set_ylabel(r'CSD ($mV/mm^2$)',fontsize=10)
-    self.lax[0].set_ylabel('Frequency (Hz)',fontsize=10);
-    self.lax[0].tick_params(labelsize=8)
+      self.lax[-1].set_ylabel(r'CSD ($mV/mm^2$)',fontsize=12)#fontsize=10)
+    self.lax[0].set_ylabel('Frequency (Hz)',fontsize=12);#fontsize=10);
+    self.lax[0].tick_params(labelsize=10)#8)
   def clf (self):
     # clear figure
     self.fig.clf()
@@ -151,6 +153,7 @@ class eventviewer():
     evidx=int(evidx)
     if clr is None: clr = lclr[evidx%len(lclr)]
     dur,chan,hasbefore,hasafter,windowidx,offidx,left,right,minT,maxT,peakT,minF,maxF,peakF,avgpowevent,ncycle,WavePeakT,WaveTroughT,WaveletPeakT,WaveletLeftTroughT,WaveletRightTroughT,w2,left,right,band,alignoffset,filtsigcor,Foct,cycnpeak,ERPscore,OSCscore = geteventprop(dframe, evidx, align)	# self.getallprop(evidx,align)  
+    print('windowidx: ' + str(windowidx)) ## testing dlms 
     # print('hasbefore: ' + str(hasbefore))
     # print('hasafter: ' + str(hasafter)) # Adding these lines to figure out more about what hasbefore / hasafter are about and if they're relevant to tightening x- axis 
     # print('minT: ' + str(minT)) ## Adding these lines to strategize about tightening x axis 
@@ -170,15 +173,21 @@ class eventviewer():
       vmin,vmax=amin(MS.TFR),amax(MS.TFR)
     if self.useloglfreq:
       global lfreq
-      ax.imshow(MS.TFR,extent=(MS.t[0]+alignoffset,MS.t[-1]+alignoffset,0,len(lfreq)-1),origin='lower',interpolation='None',aspect='auto',cmap=plt.get_cmap('jet'),vmin=vmin,vmax=vmax);
+      img=ax.imshow(MS.TFR,extent=(MS.t[0]+alignoffset,MS.t[-1]+alignoffset,0,len(lfreq)-1),origin='lower',interpolation='None',aspect='auto',cmap=plt.get_cmap('jet'),vmin=vmin,vmax=vmax);
     else:
-      ax.imshow(MS.TFR,extent=(MS.t[0]+alignoffset,MS.t[-1]+alignoffset,MS.f[0],MS.f[-1]),origin='lower',interpolation='None',aspect='auto',cmap=plt.get_cmap('jet'),vmin=vmin,vmax=vmax);
+      img=ax.imshow(MS.TFR,extent=(MS.t[0]+alignoffset,MS.t[-1]+alignoffset,MS.f[0],MS.f[-1]),origin='lower',interpolation='None',aspect='auto',cmap=plt.get_cmap('jet'),vmin=vmin,vmax=vmax);
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes('right', size='3%', pad=0.2)
+    fmt = matplotlib.ticker.ScalarFormatter(useMathText=True)
+    cbar=plt.colorbar(img, cax = cax, orientation='vertical', format=fmt)#label='Power', format=fmt)
+    cbar.set_label(' ', size=12)#('Power', size=12)
+    
     drbox(minT+alignoffset,maxT+alignoffset,minF,maxF,'r',lwbox,ax)  
     if ylspec is not None: ax.set_ylim(ylspec)
     # axtstr = 'channel:'+str(chan)+', event:'+str(evidx)+', power:'+str(round(avgpowevent,1))+'\n'
     # axtstr = band + ': minF:' + str(round(minF,2)) + ' Hz, maxF:' + str(round(maxF,2)) + ' Hz, '
     # axtstr += 'peakF:' + str(round(peakF,2)) + ' Hz'
-    axtstr = band + ', peakF: ' + str(round(peakF,2)) + ' Hz, channel: ' + str(chan)
+    axtstr = band + ', peakF: ' + str(round(peakF,2)) + ' Hz'#, channel: ' + str(chan)
     # axtstr += ', Foct:' + str(round(Foct,2))
     # print(axtstr) # print the info
     if verbose: ax.set_title(axtstr, fontsize=14) #fontsize=8) # fontsize added to try to fix formatting
@@ -249,6 +258,11 @@ class eventviewer():
     ### reset xlim on bottom panel (CSD waveform)
     ax1 = self.lax[1]
     ax1.set_xlim((xl))
+    ####### TEST LINES FOR SEEING IF CAN FIX COLORBAR RESIZING of top plot (make top and bottom same size)
+    divider1=make_axes_locatable(ax1)
+    cax1=divider1.append_axes('right',size='3%', pad=0.2)
+    cax1.axis('off')
+
     ####
     plt.tight_layout()
     plt.show()
@@ -276,6 +290,10 @@ def plotWavelets(dfs, df, dat, tt, sampr, dlms, subjectName, chanNumber, frequen
 			ylspec = (30,85)
 		else:
 			ylspec = (1,50) # (1,10) # (30,85)
+
+	## TEST LINE (colorbar / amplitude situation)
+	# if specrange is None:
+	# 	specrange = ylspec #(0,30) # (30,80)
 
 	if eventIdx is None:  
 		if len(dfs) > 0:
@@ -359,6 +377,8 @@ def plotOscEvents(oscEventsInfo, dataPaths, frequencyBands):
 
 				specrange = oscEventsInfo[band][eventType]['specrange']
 				ylspec = oscEventsInfo[band][eventType]['ylspec']
+				## TEST LINE
+				# specrange = ylspec
 
 				plotWavelets(dfs, df, dat, tt, sampr, dlms, subjectName, chan, band, eventIdx, specrange=specrange, ylspec=ylspec, saveFig=0)
 
@@ -373,8 +393,8 @@ oscEventsInfo = {'gamma':
 					{'sim': {'subjName': 'v34_batch57_4_4_data_timeRange_0_6', 'chan': 12, 'eventIdx': 1423, 'specrange': (0,30), 'ylspec': (30,95)},  
 					'nhp':{'subjName': '2-bu027028013_timeRange_0_40', 'chan': 14, 'eventIdx': 2658, 'specrange': (0,30), 'ylspec': (30,95)}}, 
 				'beta': 
-					{'sim': {'subjName': 'v34_batch57_3_2_data_timeRange_0_6', 'chan': 14, 'eventIdx': 1710, 'specrange': (0,30), 'ylspec': (10,50)}, 
-					'nhp': {'subjName': '2-rb031032016_timeRange_40_80', 'chan': 14, 'eventIdx': 2342, 'specrange': (0,25), 'ylspec': (10,50)}}, 
+					{'sim': {'subjName': 'v34_batch57_3_2_data_timeRange_0_6', 'chan': 14, 'eventIdx': 1710, 'specrange': (0,30), 'ylspec': (10,50)}}, 
+					#'nhp': {'subjName': '2-rb031032016_timeRange_40_80', 'chan': 14, 'eventIdx': 2342, 'specrange': (0,25), 'ylspec': (10,50)}}, 
 				'alpha': 
 					{'sim': {'subjName': 'v34_batch57_3_2_data_timeRange_6_11', 'chan': 9, 'eventIdx': 863, 'specrange': (0,20), 'ylspec': (1,30)}, 
 					'nhp':{'subjName': '2-bu027028013_timeRange_80_120', 'chan': 7, 'eventIdx': 784, 'specrange': (0,20), 'ylspec': (1,30)}}, 
@@ -384,8 +404,7 @@ oscEventsInfo = {'gamma':
 				'delta': 
 					{'sim': {'subjName': 'v34_batch57_3_4_data_timeRange_0_6', 'chan': 14, 'eventIdx': 1666, 'specrange': (0,30), 'ylspec': (1,10)}, 
 					'nhp':{'subjName': '2-rb031032016_timeRange_160_200', 'chan': 18, 'eventIdx': 3020, 'specrange': (0,30), 'ylspec': (1,10)}}}
-
-
+              ### ^^ this last one is the only dlms file I cannot account for locally or on gcp bucket 
 
 
 # --------------------------
@@ -393,10 +412,13 @@ oscEventsInfo = {'gamma':
 # --------------------------
 if __name__ == '__main__':
 	# Fig 6
-	plotOscEvents(oscEventsInfo, dataPaths, ['gamma', 'beta', 'alpha', 'theta', 'delta'])
+	plotOscEvents(oscEventsInfo, dataPaths, ['beta'])#['gamma', 'beta', 'alpha', 'theta', 'delta'])
 
-
-
+  # # dlms testing
+  # dataPath = '../data/v34_batch57/fig6_data/'
+  # subjectName = 'v34_batch57_3_2_data_timeRange_0_6'
+  # df, dlms, allData, CSD, dt, tt, sampr, dat, timeRange = readSubjectFiles(dataPath=dataPath, subjectName=subjectName, dlms=True)
+  # dfs = readChannelFiles(dataPath=dataPath, subjectName=subjectName, frequencyBand='beta', chanNumber=14)
 
 
 
