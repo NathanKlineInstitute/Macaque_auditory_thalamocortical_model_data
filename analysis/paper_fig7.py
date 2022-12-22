@@ -7,8 +7,8 @@ def getSubjectNames(dataPath, sim):
 	### dataPath: str --> path to directory with wavelet files
 	### sim: bool --> to decide which prefix to use for sorting 
 
-	os.chdir(dataPath)
-	dataDirContents = os.listdir()
+	dataDirContents = os.listdir(dataPath)
+	# print('dataDirContents: ' + str(dataDirContents))
 
 	subjects = []
 
@@ -18,7 +18,8 @@ def getSubjectNames(dataPath, sim):
 		prefix = '2-'
 
 	for obj in dataDirContents:
-		if prefix in obj and os.path.isdir(obj):
+		objPath = dataPath + obj
+		if prefix in obj and os.path.isdir(objPath):
 			subjects.append(obj)
 
 	return subjects
@@ -103,7 +104,10 @@ def getPropStats(propDict, region, frequencyBand, avg=1):
 			prop.append(propDict[subject]['infra'][frequencyBand])
 
 	propFlat = [item for subList in prop for item in subList]
-	avgProp = sum(propFlat) / len(propFlat)
+	if len(propFlat) > 0:
+		avgProp = sum(propFlat) / len(propFlat)
+	else:
+		avgProp = None
 
 	if avg:
 		return avgProp
@@ -157,7 +161,7 @@ def geteventprop (dframe,evidx,align):
     alignoffset = -WaveletRightTroughT
   #print('align:',peakT,align,alignoffset)
   return dur,int(chan),hasbefore,hasafter,int(windowidx),offidx,left,right,minT,maxT,peakT,minF,maxF,peakF,avgpowevent,ncycle,WavePeakT,WaveTroughT,WaveletPeakT,WaveletLeftTroughT,WaveletRightTroughT ,w2,left,right,band,alignoffset,filtsigcor,Foct,cycnpeak,ERPscore,OSCscore
-def statsBoxplotALL(frequencyBands, simListsDict, nhpListsDict, dataCategories, figsize=None, colors=None):  
+def statsBoxplotALL(frequencyBands, simListsDict, nhpListsDict, dataCategories, sampleNums=0, figsize=None, colors=None):  
 	### frequencyBands: list, e.g. ['alpha', 'beta']
 	### simListsDict: dict, e.g. ____
 	### nhpListsDict: dict, e.g. ____
@@ -166,15 +170,15 @@ def statsBoxplotALL(frequencyBands, simListsDict, nhpListsDict, dataCategories, 
 	### figsize: tuple, e.g. (11,7)
 	### colors: list, e.g. ['blue', 'lightgreen']
 
+
 	if figsize is None:
-		figsize = (13,7) #(11,7)
+		figsize = (14.5,7) #(13,7) #(11,7)
 	fig = plt.figure(figsize=figsize)
 
 	if colors is None:
-		# colors = ['yellow','lightblue']
-		colorsDur = ['yellow','lightblue']	#['purple', 'green']
-		colorsPeakF = ['purple', 'green']
-		colorsNCycle = ['red', 'blue']
+		colorsDur = ['crimson', 'purple'] 		#['yellow','lightblue']
+		colorsPeakF = ['olivedrab', 'darkgoldenrod'] # ['mediumblue', 'silver'] 	#['midnightblue', 'silver']	#['midnightblue', 'olivedrab'] 	#['purple', 'green']
+		colorsNCycle = ['mediumblue', 'silver'] #['olivedrab', 'darkgoldenrod'] 			# ['red', 'blue']
 
 	nrows = len(dataCategories)  ### should make it 
 	ncols = len(frequencyBands)
@@ -188,22 +192,42 @@ def statsBoxplotALL(frequencyBands, simListsDict, nhpListsDict, dataCategories, 
 				colors = colorsDur
 				simLists = simListsDict['dur']
 				nhpLists = nhpListsDict['dur']
-				cat_yLabel = 'DURATION\n(ms)'
+				## PRINT SIZE OF SAMPLES: 
+				# print(str(category))
+				# print(str(band))
+				# print('len(simLists[band][all]): ' + str(len(simLists[band]['all'])))
+				# print('len(nhpLists[band][all]): ' + str(len(nhpLists[band]['all'])))
+				#### convert to seconds
+				# simLists[band]['all'][:] = [x / 1000 for x in simLists[band]['all']]
+				# nhpLists[band]['all'][:] = [x / 1000 for x in nhpLists[band]['all']]
+				####
+				cat_yLabel = 'DURATION\n(ms)'	#'DURATION (s)'		#'DURATION\n(ms)'
 			elif category == 'peakF':
 				colors = colorsPeakF
 				simLists = simListsDict['peakF']
 				nhpLists = nhpListsDict['peakF']
 				cat_yLabel = 'PEAK\nFREQUENCY\n(Hz)'
+				# ## PRINT SIZE OF SAMPLES: 
+				# print(str(category))
+				# print(str(band))
+				# print('len(simLists[band][all]): ' + str(len(simLists[band]['all'])))
+				# print('len(nhpLists[band][all]): ' + str(len(nhpLists[band]['all'])))
 			elif category == 'nCycle':
 				colors = colorsNCycle
 				simLists = simListsDict['nCycle']
 				nhpLists = nhpListsDict['nCycle']
 				cat_yLabel = 'NUM CYCLES'
+				# ## PRINT SIZE OF SAMPLES: 
+				# print(str(category))
+				# print(str(band))
+				# print('len(simLists[band][all]): ' + str(len(simLists[band]['all'])))
+				# print('len(nhpLists[band][all]): ' + str(len(nhpLists[band]['all'])))
 
 			ax = fig.add_subplot(nrows, ncols, i)
 			simDataPlot = simLists[band]['all'] 			# simLists[band][region]
 			nhpDataPlot = nhpLists[band]['all']				# nhpLists[band][region]
-			bp = ax.boxplot((simDataPlot,nhpDataPlot),patch_artist=True)#,showfliers=False)
+			bp = ax.boxplot((simDataPlot,nhpDataPlot),patch_artist=True)	#,showfliers=False)
+
 
 
 			for patch, color in zip(bp['boxes'], colors):
@@ -211,31 +235,71 @@ def statsBoxplotALL(frequencyBands, simListsDict, nhpListsDict, dataCategories, 
 			## style of fliers ##
 			for flier in bp['fliers']:
 				flier.set(marker='o', markersize=3)
+
+
 			## axes and titles ##
-			ax.set_xticklabels(['MODEL', 'NHP'], fontsize=9)	# (['SIM', 'NHP'], fontsize=9)		# ax.xaxis.set_visible(False)
-			ax.tick_params(axis='y', labelsize=6)
+			#### TESTING PUTTING N SAMPLE SIZE NUMBERS ON BOTTOM AXIS 
+			if sampleNums:
+				if category == 'nCycle':
+					if band=='delta':
+						ax.set_xticklabels(['MODEL\n(n=12)', 'NHP\n(n=55)'], fontsize=12)
+					elif band=='theta':
+						ax.set_xticklabels(['MODEL\n(n=44)', 'NHP\n(n=126)'], fontsize=12)
+					elif band=='alpha':
+						ax.set_xticklabels(['MODEL\n(n=59)', 'NHP\n(n=138)'], fontsize=12)
+					elif band=='beta':
+						ax.set_xticklabels(['MODEL\n(n=192)', 'NHP\n(n=318)'], fontsize=12)
+					elif band =='gamma':
+						ax.set_xticklabels(['MODEL\n(n=2359)', 'NHP\n (n=1625)'], fontsize=12)
+				else:
+					ax.set_xticklabels(['MODEL', 'NHP'], fontsize=12)	#9)	# (['SIM', 'NHP'], fontsize=9)
+			else:
+				ax.set_xticklabels(['MODEL', 'NHP'], fontsize=15)	#9)	# (['SIM', 'NHP'], fontsize=9)
+
+
+			ax.tick_params(axis='y', labelsize=12)	#6)
+			# ### TESTING SCIENTIFIC NOTATION FOR TICK PARAMS
+			# from matplotlib import ticker
+			# formatter = ticker.ScalarFormatter(useMathText=True)
+			# formatter.set_scientific(True) 
+			# formatter.set_powerlimits((-1,1)) 
+			# ax.yaxis.set_major_formatter(formatter) 
+
 			if r:
-				ax.set_ylabel(cat_yLabel,labelpad=40,rotation=0,fontsize=10,verticalalignment='center',fontweight='bold')
+				if cat_yLabel == 'DURATION\n(ms)':	# 'DURATION (s)': 	#'DURATION\n(ms)':
+					labelPad = 55 # 60	# 47
+				elif cat_yLabel == 'PEAK\nFREQUENCY\n(Hz)':
+					labelPad = 75 #65 #60
+				elif cat_yLabel == 'NUM CYCLES':
+					labelPad = 70 # 65
+				ax.set_ylabel(cat_yLabel,labelpad=labelPad,rotation=0,fontsize=15,verticalalignment='center',fontweight='bold')
 			if category == dataCategories[0]: 
-				ax.set_title(band, fontsize=10, fontweight='bold')
+				ax.set_title(band, fontsize=15, fontweight='bold')
 			i+=1
 			r=0
 
-	plt.subplots_adjust(top=0.85, bottom=0.05, wspace=0.3, hspace=0.3)
-	fig.suptitle('COMPARISON OF OSCILLATION EVENT PROPERTIES', fontsize=14, fontweight='bold', horizontalalignment='center', y=0.95)
+
+	if sampleNums:
+		plt.subplots_adjust(top=0.825, bottom=0.08, wspace=0.5, hspace=0.32, left=0.15)
+	else:
+		plt.subplots_adjust(top=0.825, bottom=0.05, wspace=0.5, hspace=0.32, left=0.15)  # top=0.85, wspace=0.3
+	fig.suptitle('COMPARISON OF OSCILLATION EVENT PROPERTIES', fontsize=20, fontweight='bold', horizontalalignment='center', y=0.95)
+
 
 	plt.show()
 
+
 def plotStats():
 	simPath = dataPathPrefix + 'v34_batch57/'
+	# print('simPath: ' + str(simPath))
 	nhpPath = dataPathPrefix + 'NHP_data/spont/'
+	# print('nhpPath: ' + str(nhpPath))
 
 	simSubjects = getSubjectNames(dataPath=simPath, sim=1)
 	nhpSubjects = getSubjectNames(dataPath=nhpPath, sim=0)
 
 	# print('simSubjects: ' + str(simSubjects)) ## TESTING LINES --> WORKS
 	# print('nhpSubjects: ' + str(nhpSubjects)) ## TESTING LINES --> WORKS
-
 
 	### Frequency bands & region ###
 	frequencyBands = ['delta', 'theta', 'alpha', 'beta', 'gamma']
@@ -271,7 +335,8 @@ def plotStats():
 
 
 	#### GENERATE BOXPLOTS ####
-	statsBoxplotALL(frequencyBands, simListsDict=simListsDict, nhpListsDict=nhpListsDict, dataCategories=['dur', 'peakF', 'nCycle'], figsize=None, colors=None)
+	statsBoxplotALL(frequencyBands, simListsDict=simListsDict, nhpListsDict=nhpListsDict, 
+			dataCategories=['dur', 'peakF', 'nCycle'], sampleNums=0, figsize=None, colors=None)
 
 ######### PATH TO DATA DIRECTORY #########
 dataPathPrefix = '../data/'  ## NOTE: Change this to wherever Macaque_auditory_thalamocortical_model_data/data directory is located, e.g. '/Home/Desktop/Macaque_auditory_thalamocortical_model_data/data/'
