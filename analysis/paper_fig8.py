@@ -665,7 +665,7 @@ def plotDataFrames(dataFrame, electrodes=None, pops=None, title=None, cbarLabel=
 	## Set Font Sizes for the Heatmap Plot 
 	titleFontSize = 30	#25	#20
 	labelFontSize = 25	#20	#15
-	tickFontSize = 15 	#10
+	tickFontSize = 20	#15 #10
 
 
 	## Create lists of x and y axis labels 
@@ -685,10 +685,12 @@ def plotDataFrames(dataFrame, electrodes=None, pops=None, title=None, cbarLabel=
 
 
 	## Create heatmap! 
-	ax = sns.heatmap(pivotedDataFrame, xticklabels=x_axis_labels, yticklabels=y_axis_labels, linewidth=0.4, cbar_kws={'label': cbarLabel})
+	ax = sns.heatmap(pivotedDataFrame, xticklabels=x_axis_labels, yticklabels=y_axis_labels, 
+					linewidth=0.4, center=4, cbar_kws={'label': cbarLabel}) 
 
 	## Change fontsize of heatmap label
 	ax.figure.axes[-1].yaxis.label.set_size(18)
+	ax.figure.axes[-1].tick_params(labelsize=15)
 
 	## Set labels on x and y axes 
 	plt.xlabel('Cell populations', fontsize=labelFontSize)
@@ -1398,11 +1400,11 @@ based = '../data/v34_batch57/'  # Change this if necessary with path to data dir
 # --------------------------
 if __name__ == '__main__':
 	# # Fig 8 -- heatmap
-	# plotHeatmap(based)
+	plotHeatmap(based)
 	# # Fig 8 -- CSD panels 
 	# plotCSDPanels(based)
 	# # Fig 8 -- Spike data panels 
-	plotSpikePanels(based)
+	# plotSpikePanels(based)
 
 
 
