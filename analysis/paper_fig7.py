@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
+
 
 
 def getSubjectNames(dataPath, sim):
@@ -172,13 +174,13 @@ def statsBoxplotALL(frequencyBands, simListsDict, nhpListsDict, dataCategories, 
 
 
 	if figsize is None:
-		figsize = (14.5,7) #(13,7) #(11,7)
+		figsize = (14.5,7) 
 	fig = plt.figure(figsize=figsize)
 
 	if colors is None:
-		colorsDur = ['crimson', 'purple'] 		#['yellow','lightblue']
-		colorsPeakF = ['olivedrab', 'darkgoldenrod'] # ['mediumblue', 'silver'] 	#['midnightblue', 'silver']	#['midnightblue', 'olivedrab'] 	#['purple', 'green']
-		colorsNCycle = ['mediumblue', 'silver'] #['olivedrab', 'darkgoldenrod'] 			# ['red', 'blue']
+		colorsDur = ['crimson', 'purple'] 				# ['yellow','lightblue']
+		colorsPeakF = ['olivedrab', 'darkgoldenrod']	# ['mediumblue', 'silver'] 	#['midnightblue', 'silver']		#['midnightblue', 'olivedrab']		#['purple', 'green']
+		colorsNCycle = ['mediumblue', 'silver']			# ['olivedrab', 'darkgoldenrod'] 			#['red', 'blue']
 
 	nrows = len(dataCategories)  ### should make it 
 	ncols = len(frequencyBands)
@@ -201,38 +203,38 @@ def statsBoxplotALL(frequencyBands, simListsDict, nhpListsDict, dataCategories, 
 				# simLists[band]['all'][:] = [x / 1000 for x in simLists[band]['all']]
 				# nhpLists[band]['all'][:] = [x / 1000 for x in nhpLists[band]['all']]
 				####
-				cat_yLabel = 'DURATION\n(ms)'	#'DURATION (s)'		#'DURATION\n(ms)'
+				cat_yLabel = 'DURATION\n(ms)'
+
 			elif category == 'peakF':
 				colors = colorsPeakF
 				simLists = simListsDict['peakF']
 				nhpLists = nhpListsDict['peakF']
 				cat_yLabel = 'PEAK\nFREQUENCY\n(Hz)'
-				# ## PRINT SIZE OF SAMPLES: 
-				# print(str(category))
-				# print(str(band))
-				# print('len(simLists[band][all]): ' + str(len(simLists[band]['all'])))
-				# print('len(nhpLists[band][all]): ' + str(len(nhpLists[band]['all'])))
+
 			elif category == 'nCycle':
 				colors = colorsNCycle
 				simLists = simListsDict['nCycle']
 				nhpLists = nhpListsDict['nCycle']
 				cat_yLabel = 'NUM CYCLES'
-				# ## PRINT SIZE OF SAMPLES: 
-				# print(str(category))
-				# print(str(band))
-				# print('len(simLists[band][all]): ' + str(len(simLists[band]['all'])))
-				# print('len(nhpLists[band][all]): ' + str(len(nhpLists[band]['all'])))
+
 
 			ax = fig.add_subplot(nrows, ncols, i)
-			simDataPlot = simLists[band]['all'] 			# simLists[band][region]
-			nhpDataPlot = nhpLists[band]['all']				# nhpLists[band][region]
+			simDataPlot = simLists[band]['all'] 							# simLists[band][region]
+			nhpDataPlot = nhpLists[band]['all']								# nhpLists[band][region]
 			bp = ax.boxplot((simDataPlot,nhpDataPlot),patch_artist=True)	#,showfliers=False)
 
 
-			#### ADD 'n.s.' DESIGNATION TO PANELS ####
-			
+			## ADD STATS ("n.s.") DESIGNATION TO PANELS ####
+			y_max = np.max(np.concatenate((simDataPlot, nhpDataPlot)))
+			y_min = np.min(np.concatenate((simDataPlot, nhpDataPlot)))
+			ax.annotate("", xy=(1,y_max), xycoords='data', xytext=(2,y_max), textcoords='data',
+							arrowprops=dict(arrowstyle="-", ec='#aaaaaa',
+							connectionstyle="bar,fraction=0.1"))
+			ax.text(1.5, y_max+abs(y_max - y_min)*0.15, 'n.s.', 
+				horizontalalignment='center', verticalalignment='center')
 
 
+			## Designate colors for boxplots 
 			for patch, color in zip(bp['boxes'], colors):
 				patch.set_facecolor(color)
 			## style of fliers ##
@@ -241,7 +243,7 @@ def statsBoxplotALL(frequencyBands, simListsDict, nhpListsDict, dataCategories, 
 
 
 			## axes and titles ##
-			#### TESTING PUTTING N SAMPLE SIZE NUMBERS ON BOTTOM AXIS 
+			#### TO ADD N SAMPLE SIZE NUMBERS ON BOTTOM AXIS 
 			if sampleNums:
 				if category == 'nCycle':
 					if band=='delta':
@@ -255,24 +257,28 @@ def statsBoxplotALL(frequencyBands, simListsDict, nhpListsDict, dataCategories, 
 					elif band =='gamma':
 						ax.set_xticklabels(['MODEL\n(n=2359)', 'NHP\n (n=1625)'], fontsize=12)
 				else:
-					ax.set_xticklabels(['MODEL', 'NHP'], fontsize=12)	#9)	# (['SIM', 'NHP'], fontsize=9)
+					ax.set_xticklabels(['MODEL', 'NHP'], fontsize=12)
 			else:
-				ax.set_xticklabels(['MODEL', 'NHP'], fontsize=15)	#9)	# (['SIM', 'NHP'], fontsize=9)
+				ax.set_xticklabels(['MODEL', 'NHP'], fontsize=15)
 
 
-			ax.tick_params(axis='y', labelsize=12)	#6)
-			# ### TESTING SCIENTIFIC NOTATION FOR TICK PARAMS
+			ax.tick_params(axis='y', labelsize=12)
+			# ### TO USE SCIENTIFIC NOTATION FOR TICK PARAMS
 			# from matplotlib import ticker
 			# formatter = ticker.ScalarFormatter(useMathText=True)
 			# formatter.set_scientific(True) 
 			# formatter.set_powerlimits((-1,1)) 
 			# ax.yaxis.set_major_formatter(formatter) 
 
+
+			## Increase y axis limit to accommodate stats designation 
+			ax.set_ylim(ymax=y_max+abs(y_max - y_min)*0.25)
+
 			if r:
-				if cat_yLabel == 'DURATION\n(ms)':	# 'DURATION (s)': 	#'DURATION\n(ms)':
+				if cat_yLabel == 'DURATION\n(ms)':
 					labelPad = 55 # 60	# 47
 				elif cat_yLabel == 'PEAK\nFREQUENCY\n(Hz)':
-					labelPad = 75 #65 #60
+					labelPad = 75 # 65 	# 60
 				elif cat_yLabel == 'NUM CYCLES':
 					labelPad = 70 # 65
 				ax.set_ylabel(cat_yLabel,labelpad=labelPad,rotation=0,fontsize=15,verticalalignment='center',fontweight='bold')
@@ -285,7 +291,7 @@ def statsBoxplotALL(frequencyBands, simListsDict, nhpListsDict, dataCategories, 
 	if sampleNums:
 		plt.subplots_adjust(top=0.825, bottom=0.08, wspace=0.5, hspace=0.32, left=0.15)
 	else:
-		plt.subplots_adjust(top=0.825, bottom=0.05, wspace=0.5, hspace=0.32, left=0.15)  # top=0.85, wspace=0.3
+		plt.subplots_adjust(top=0.825, bottom=0.05, wspace=0.5, hspace=0.32, left=0.15)
 	fig.suptitle('COMPARISON OF OSCILLATION EVENT PROPERTIES', fontsize=20, fontweight='bold', horizontalalignment='center', y=0.95)
 
 
