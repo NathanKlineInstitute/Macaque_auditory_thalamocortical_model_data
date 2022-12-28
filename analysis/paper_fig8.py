@@ -331,7 +331,7 @@ def plotCombinedCSD(pop, electrode, colorDict, timeSeriesDict=None, spectDict=No
 			vmin=vc[0], vmax=vc[1], cmap=plt.get_cmap(colorMap))  # minFreq --> np.amin(F)  	# maxFreq --> np.amax(F)	# imshowSignal --> S
 		divider1 = make_axes_locatable(ax1)
 		cax1 = divider1.append_axes('right', size='3%', pad=0.2)
-		cax1.tick_params(labelsize=12)
+		cax1.tick_params(labelsize=15) #12)
 		fmt = matplotlib.ticker.ScalarFormatter(useMathText=True)		## fmt lines are for colorbar scientific notation
 		fmt.set_powerlimits((0,0))
 		cbar=plt.colorbar(img, cax = cax1, orientation='vertical', label='Power', format=fmt)
@@ -340,8 +340,8 @@ def plotCombinedCSD(pop, electrode, colorDict, timeSeriesDict=None, spectDict=No
 		ax1.set_ylabel('Frequency (Hz)', fontsize=labelFontSize)
 		ax1.set_xlim(left=T[0], right=T[1]) 			# ax1.set_xlim(left=timeRange[0], right=timeRange[1])
 		# ax1.set_ylim(minFreq, maxFreq)				# Uncomment this if using the commented-out ax1.imshow (with S, and with np.amin(F) etc.)
-		## Set the spectrogram tick params (font size)
-		ax1.tick_params(axis='both', labelsize=12)
+		## Set the spectrogram tick params (font size) ## 
+		ax1.tick_params(axis='both', labelsize=15) #12)
 
 
 		### PLOT TIMESERIES ###
@@ -383,7 +383,7 @@ def plotCombinedCSD(pop, electrode, colorDict, timeSeriesDict=None, spectDict=No
 		# Set y-axis label 
 		ax2.set_ylabel(timeSeriesYAxis, fontsize=labelFontSize)
 		# Set the timeSeries tick params (font size)
-		ax2.tick_params(axis='both', labelsize=12)
+		ax2.tick_params(axis='both', labelsize=15) #12)
 
 		# For potential saving 
 		if popToPlot is None:
@@ -407,7 +407,7 @@ def plotCombinedCSD(pop, electrode, colorDict, timeSeriesDict=None, spectDict=No
 			vmin=vc[0], vmax=vc[1], cmap=plt.get_cmap(colorMap)) 
 		divider1 = make_axes_locatable(ax1)
 		cax1 = divider1.append_axes('right', size='3%', pad=0.2)
-		cax1.tick_params(labelsize=12)
+		cax1.tick_params(labelsize=15) #12)
 		fmt = matplotlib.ticker.ScalarFormatter(useMathText=True)		## fmt lines are for colorbar scientific notation
 		fmt.set_powerlimits((0,0))
 		cbar=plt.colorbar(img, cax = cax1, orientation='vertical', label='Power', format=fmt)
@@ -418,7 +418,7 @@ def plotCombinedCSD(pop, electrode, colorDict, timeSeriesDict=None, spectDict=No
 		ax1.set_xlim(left=T[0], right=T[1]) 			# ax1.set_xlim(left=timeRange[0], right=timeRange[1])
 		# ax1.set_ylim(minFreq, maxFreq) 				# Uncomment this if using the commented-out ax1.imshow (with S, and with np.amin(F) etc.)
 		## Set the spectrogram tick params (font size)
-		ax1.tick_params(axis='both', labelsize=12)
+		ax1.tick_params(axis='both', labelsize=15) #12)
 
 		# For potential saving 
 		if popToPlot is None:
@@ -472,7 +472,7 @@ def plotCombinedCSD(pop, electrode, colorDict, timeSeriesDict=None, spectDict=No
 		# Set y-axis label 
 		ax2.set_ylabel(timeSeriesYAxis, fontsize=labelFontSize)
 		## Set the timeSeries tick params (font size)
-		ax2.tick_params(axis='both', labelsize=12)
+		ax2.tick_params(axis='both', labelsize=15) #12)
 
 		# For potential saving 
 		if popToPlot is None:
@@ -512,11 +512,15 @@ def plotCSDPanels(based):
 	plt.show()
 
 ## CSD heatmap 
-def getCSDDataFrames(dataFile, oscEventInfo=None, verbose=0):
+def getCSDDataFrames(dataFile, absolute=None, oscEventInfo=None, verbose=0):
 	## This function will return data frames of peak and average CSD amplitudes, for picking cell pops
 	### dataFile: str 				--> .pkl file to load, with data from the whole recording
+	### absolute: bool 				--> determines whether to output absolute CSD values in dataframe 
 	### oscEvenfInfo: dict 			--> dict w/ chan, left, right, minT, maxT, alignoffset
 	### verbose: bool 
+
+	if absolute is None:
+		absolute=1
 
 	sim.load(dataFile, instantiate=False)
 	# Get args for getCSDdata
@@ -587,7 +591,11 @@ def getCSDDataFrames(dataFile, oscEventInfo=None, verbose=0):
 				elecKey = 'elec' + str(elec)
 			elif elec == 'avg': 
 				elecKey = 'avg'
-			peakValues['peakCSD'][p].append(csdPopData[pop][elecKey]['peak'])
+			# peakValues['peakCSD'][p].append(csdPopData[pop][elecKey]['peak'])
+			if absolute:
+				peakValues['peakCSD'][p].append(np.absolute(csdPopData[pop][elecKey]['peak']))
+			else:
+				peakValues['peakCSD'][p].append(csdPopData[pop][elecKey]['peak'])
 		p+=1
 	dfPeak = pd.DataFrame(peakValues['peakCSD'], index=pops)
 
@@ -604,7 +612,11 @@ def getCSDDataFrames(dataFile, oscEventInfo=None, verbose=0):
 				elecKey = 'elec' + str(elec)
 			elif elec == 'avg':
 				elecKey = 'avg'
-			avgValues['avgCSD'][q].append(csdPopData[pop][elecKey]['avg'])
+			# avgValues['avgCSD'][q].append(csdPopData[pop][elecKey]['avg'])
+			if absolute:
+				avgValues['avgCSD'][q].append(np.absolute(csdPopData[pop][elecKey]['avg']))
+			else:
+				avgValues['avgCSD'][q].append(csdPopData[pop][elecKey]['avg'])
 		q+=1
 	dfAvg = pd.DataFrame(avgValues['avgCSD'], index=pops)
 
@@ -614,9 +626,10 @@ def getCSDDataFrames(dataFile, oscEventInfo=None, verbose=0):
 		return dfPeak, dfAvg, peakValues, avgValues, csdPopData 
 	else:
 		return dfPeak, dfAvg
-def plotDataFrames(dataFrame, electrodes=None, pops=None, title=None, cbarLabel=None, figSize=None, savePath=None, saveFig=True):
+def plotDataFrames(dataFrame, absolute=1, electrodes=None, pops=None, title=None, cbarLabel=None, figSize=None, savePath=None, saveFig=True):
 	#### --> This function will plot a heatmap of the peak or average LFP amplitudes across electrodes & cell populations
 	### dataFrame: pandas dataFrame  --> These can be obtained from getDataFrames function above)
+	### absolute=1 			--> determines if absolute CSD values will be plotted or not 
 	### electrodes: list 	--> DEFAULT: use all electrodes + 'avg'
 	### pops: list 			--> DEFAULT: all cortical pops 
 	### title: str  		--> Optional; title of the entire figure
@@ -625,6 +638,7 @@ def plotDataFrames(dataFrame, electrodes=None, pops=None, title=None, cbarLabel=
 	### savePath: str 		--> path to directory where figures should be saved 
 	### saveFig: bool 		-->  DEFAULT: True 
 
+	### NOTE: I SHOULD HAVE THIS FUNCTION CALL CSD DATA FRAMES FX!!! 
 
 	## Set label for color scalebar 
 	if cbarLabel is None:
@@ -685,8 +699,12 @@ def plotDataFrames(dataFrame, electrodes=None, pops=None, title=None, cbarLabel=
 
 
 	## Create heatmap! 
-	ax = sns.heatmap(pivotedDataFrame, xticklabels=x_axis_labels, yticklabels=y_axis_labels, 
-					linewidth=0.4, center=4, cbar_kws={'label': cbarLabel}) 
+	if absolute:
+		ax = sns.heatmap(pivotedDataFrame, xticklabels=x_axis_labels, yticklabels=y_axis_labels, 
+						linewidth=0.4, center=7, cbar_kws={'label': cbarLabel}) 
+	else:
+		ax = sns.heatmap(pivotedDataFrame, xticklabels=x_axis_labels, yticklabels=y_axis_labels, 
+						linewidth=0.4, center=4, cbar_kws={'label': cbarLabel}) 
 
 	## Change fontsize of heatmap label
 	ax.figure.axes[-1].yaxis.label.set_size(18)
@@ -703,7 +721,7 @@ def plotDataFrames(dataFrame, electrodes=None, pops=None, title=None, cbarLabel=
 	plt.show()
 
 	return ax
-def plotHeatmap(based):
+def plotHeatmap(based, absolute=1):
 	thetaOscEventInfo = {'chan': 8, 'minT': 2785.22321038684, 
 					'maxT': 3347.9278996316607, 'alignoffset':-3086.95, 'left': 55704, 'right':66958,
 					'w2': 3376} 
@@ -712,8 +730,11 @@ def plotHeatmap(based):
 
 	ECortPops = ['IT2', 'IT3', 'ITP4', 'ITS4', 'IT5A', 'CT5A', 'IT5B', 'CT5B', 'PT5B', 'IT6', 'CT6']
 
-	dfCSDPeak, dfCSDAvg = getCSDDataFrames(dataFile=dataFile, oscEventInfo=thetaOscEventInfo)
-	avgCSDPlot = plotDataFrames(dfCSDAvg, electrodes=None, pops=ECortPops, title='Avg CSD Values', cbarLabel='CSD', figSize=(10,8), savePath=None, saveFig=False) # figSize=(10,7)
+	dfCSDPeak, dfCSDAvg = getCSDDataFrames(dataFile=dataFile, oscEventInfo=thetaOscEventInfo, absolute=absolute)
+	# dfCSDPeak, dfCSDAvg, peakValues, avgValues, csdPopData  = getCSDDataFrames(dataFile=dataFile, oscEventInfo=thetaOscEventInfo, absolute=absolute, verbose=1)
+	avgCSDPlot = plotDataFrames(dfCSDAvg, absolute=absolute, electrodes=None, pops=ECortPops, title='Avg CSD Values', cbarLabel='CSD', figSize=(10,8), savePath=None, saveFig=False) # figSize=(10,7)
+
+	# return dfCSDPeak, dfCSDAvg, peakValues, avgValues, csdPopData
 
 ## Spike panels 
 def getRateSpectrogramData(include=['allCells', 'eachPop'], oscEventInfo=None, binSize=5, minFreq=1, maxFreq=100, stepFreq=1, NFFT=256, noverlap=128, smooth=0, transformMethod = 'morlet', norm=False):
@@ -1268,7 +1289,7 @@ def plotCombinedSpike(pop, colorDict, plotTypes=['spectrogram', 'histogram'], ha
 				interpolation='None', aspect='auto', cmap=plt.get_cmap(colorMap), vmin=vc[0], vmax=vc[1])
 		divider1 = make_axes_locatable(ax1)
 		cax1 = divider1.append_axes('right', size='3%', pad = 0.2)
-		cax1.tick_params(labelsize=12)
+		cax1.tick_params(labelsize=15) #12)
 		fmt = matplotlib.ticker.ScalarFormatter(useMathText=True)		## fmt lines are for colorbar to be in scientific notation
 		fmt.set_powerlimits((0,0))
 		cbar=plt.colorbar(img, cax = cax1, orientation='vertical', label='Power', format=fmt)
@@ -1277,7 +1298,7 @@ def plotCombinedSpike(pop, colorDict, plotTypes=['spectrogram', 'histogram'], ha
 		ax1.set_ylabel('Frequency (Hz)', fontsize=labelFontSize)
 		ax1.set_xlim(left=timeRange[0], right=timeRange[1])
 		## Set the spectrogram tick params (font size)
-		ax1.tick_params(axis='both', labelsize=12)
+		ax1.tick_params(axis='both', labelsize=15) #12)
 
 		# Plot Histogram 
 		ax2 = plt.subplot(212)
@@ -1294,7 +1315,7 @@ def plotCombinedSpike(pop, colorDict, plotTypes=['spectrogram', 'histogram'], ha
 		ax2.set_xlabel('Time (ms)', fontsize=labelFontSize)
 		ax2.set_ylabel('Rate (Hz)', fontsize=labelFontSize) # CLARIFY Y AXIS
 		# Set the histogram tick params (font size)
-		ax2.tick_params(axis='both', labelsize=12)
+		ax2.tick_params(axis='both', labelsize=15) #12)
 		if hasBefore and hasAfter:
 			T_before = histDict['T_before']
 			T_after = histDict['T_after']
@@ -1315,7 +1336,7 @@ def plotCombinedSpike(pop, colorDict, plotTypes=['spectrogram', 'histogram'], ha
 				interpolation='None', aspect='auto', cmap=plt.get_cmap(colorMap), vmin=vc[0], vmax=vc[0])
 		divider1 = make_axes_locatable(ax1)
 		cax1 = divider1.append_axes('right', size='3%', pad = 0.2)
-		cax1.tick_params(labelsize=12)
+		cax1.tick_params(labelsize=15) #12)
 		fmt = matplotlib.ticker.ScalarFormatter(useMathText=True)		## fmt lines are for colorbar to be in scientific notation
 		fmt.set_powerlimits((0,0))
 		cbar=plt.colorbar(img, cax = cax1, orientation='vertical', label='Power', format=fmt)
@@ -1325,7 +1346,7 @@ def plotCombinedSpike(pop, colorDict, plotTypes=['spectrogram', 'histogram'], ha
 		ax1.set_xlim(left=timeRange[0], right=timeRange[1])
 		# ax1.set_ylim(minFreq, maxFreq)
 		## Set the spectrogram tick params (font size)
-		ax1.tick_params(axis='both', labelsize=12)
+		ax1.tick_params(axis='both', labelsize=15) #12)
 
 		# For figure saving
 		figFilename = popToPlot + figSaveStr + '_spike_spectrogram.png'
@@ -1349,7 +1370,7 @@ def plotCombinedSpike(pop, colorDict, plotTypes=['spectrogram', 'histogram'], ha
 		ax2.set_ylabel('Rate (Hz)', fontsize=labelFontSize) # CLARIFY Y AXIS
 		# ax2.set_xlim(left=timeRange[0], right=timeRange[1])
 		# Set the histogram tick params (font size)
-		ax2.tick_params(axis='both', labelsize=12)
+		ax2.tick_params(axis='both', labelsize=15) #12)
 		if hasBefore and hasAfter:
 			T_before = histDict['T_before']
 			T_after = histDict['T_after']
@@ -1400,7 +1421,8 @@ based = '../data/v34_batch57/'  # Change this if necessary with path to data dir
 # --------------------------
 if __name__ == '__main__':
 	# # Fig 8 -- heatmap
-	plotHeatmap(based)
+	# dfCSDPeak, dfCSDAvg, peakValues, avgValues, csdPopData= 
+	plotHeatmap(based, absolute=1)
 	# # Fig 8 -- CSD panels 
 	# plotCSDPanels(based)
 	# # Fig 8 -- Spike data panels 

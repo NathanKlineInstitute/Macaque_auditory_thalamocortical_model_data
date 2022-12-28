@@ -229,6 +229,9 @@ def statsBoxplotALL(frequencyBands, simListsDict, nhpListsDict, dataCategories, 
 			bp = ax.boxplot((simDataPlot,nhpDataPlot),patch_artist=True)	#,showfliers=False)
 
 
+			#### ADD 'n.s.' DESIGNATION TO PANELS ####
+			
+
 
 			for patch, color in zip(bp['boxes'], colors):
 				patch.set_facecolor(color)
