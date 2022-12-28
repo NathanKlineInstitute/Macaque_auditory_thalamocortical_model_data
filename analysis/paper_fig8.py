@@ -626,7 +626,7 @@ def getCSDDataFrames(dataFile, absolute=None, oscEventInfo=None, verbose=0):
 		return dfPeak, dfAvg, peakValues, avgValues, csdPopData 
 	else:
 		return dfPeak, dfAvg
-def plotDataFrames(dataFrame, absolute=1, electrodes=None, pops=None, title=None, cbarLabel=None, figSize=None, savePath=None, saveFig=True):
+def plotDataFrames(dataFrame, absolute=None, electrodes=None, pops=None, title=None, cbarLabel=None, figSize=None, savePath=None, saveFig=True):
 	#### --> This function will plot a heatmap of the peak or average LFP amplitudes across electrodes & cell populations
 	### dataFrame: pandas dataFrame  --> These can be obtained from getDataFrames function above)
 	### absolute=1 			--> determines if absolute CSD values will be plotted or not 
@@ -640,11 +640,17 @@ def plotDataFrames(dataFrame, absolute=1, electrodes=None, pops=None, title=None
 
 	### NOTE: I SHOULD HAVE THIS FUNCTION CALL CSD DATA FRAMES FX!!! 
 
+	if absolute is None:
+		absolute=1
+
 	## Set label for color scalebar 
 	if cbarLabel is None:
 		cbarLabel = 'LFP amplitude (mV)'
 	elif cbarLabel is 'CSD':
-		cbarLabel = 'CSD amplitude (' + r'$\frac{mV}{mm^2}$' + ')'
+		if absolute:
+			cbarLabel = 'Absolute value of CSD amplitude (' + r'$\frac{mV}{mm^2}$' + ')'
+		else:
+			cbarLabel = 'CSD amplitude (' + r'$\frac{mV}{mm^2}$' + ')'
 
 	## Create lists of electrode (columns and labels)
 	if electrodes is None:
@@ -731,10 +737,8 @@ def plotHeatmap(based, absolute=1):
 	ECortPops = ['IT2', 'IT3', 'ITP4', 'ITS4', 'IT5A', 'CT5A', 'IT5B', 'CT5B', 'PT5B', 'IT6', 'CT6']
 
 	dfCSDPeak, dfCSDAvg = getCSDDataFrames(dataFile=dataFile, oscEventInfo=thetaOscEventInfo, absolute=absolute)
-	# dfCSDPeak, dfCSDAvg, peakValues, avgValues, csdPopData  = getCSDDataFrames(dataFile=dataFile, oscEventInfo=thetaOscEventInfo, absolute=absolute, verbose=1)
 	avgCSDPlot = plotDataFrames(dfCSDAvg, absolute=absolute, electrodes=None, pops=ECortPops, title='Avg CSD Values', cbarLabel='CSD', figSize=(10,8), savePath=None, saveFig=False) # figSize=(10,7)
 
-	# return dfCSDPeak, dfCSDAvg, peakValues, avgValues, csdPopData
 
 ## Spike panels 
 def getRateSpectrogramData(include=['allCells', 'eachPop'], oscEventInfo=None, binSize=5, minFreq=1, maxFreq=100, stepFreq=1, NFFT=256, noverlap=128, smooth=0, transformMethod = 'morlet', norm=False):
@@ -1404,8 +1408,16 @@ def plotSpikePanels(based):
 		histDict = getSpikeData(dataFile, graphType='hist', pop=pop, oscEventInfo=thetaOscEventInfo)
 
 		## Then call plotting function 
+		if pop=='ITS4':
+			popFigSize=(10,7)
+		elif pop=='ITP4':
+			popFigSize=(9.8,7)
+		elif pop=='IT5A':
+			popFigSize=(9.5,7)
+		
 		plotCombinedSpike(spectDict=spikeSpectDict, histDict=histDict, colorDict=colorDictCustom, plotTypes=['spectrogram', 'histogram'],
-		hasBefore=1, hasAfter=1, pop=pop, figSize=(10,7), colorMap='jet', vmaxContrast=2, maxFreq=None, saveFig=0)
+		hasBefore=1, hasAfter=1, pop=pop, figSize=popFigSize, colorMap='jet', vmaxContrast=2, maxFreq=None, saveFig=0) # figSize=(10,7)
+
 
 	plt.show()
 
