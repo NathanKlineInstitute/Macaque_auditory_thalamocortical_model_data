@@ -707,10 +707,10 @@ def plotDataFrames(dataFrame, absolute=None, electrodes=None, pops=None, title=N
 	## Create heatmap! 
 	if absolute:
 		ax = sns.heatmap(pivotedDataFrame, xticklabels=x_axis_labels, yticklabels=y_axis_labels, 
-						linewidth=0.4, center=7, cbar_kws={'label': cbarLabel}) 
+						linewidth=0.4, cmap='jet', cbar_kws={'label': cbarLabel})  # center=7, 
 	else:
 		ax = sns.heatmap(pivotedDataFrame, xticklabels=x_axis_labels, yticklabels=y_axis_labels, 
-						linewidth=0.4, center=4, cbar_kws={'label': cbarLabel}) 
+						linewidth=0.4, cmap='jet', cbar_kws={'label': cbarLabel}) 	# center=4, 
 
 	## Change fontsize of heatmap label
 	ax.figure.axes[-1].yaxis.label.set_size(18)
@@ -737,8 +737,8 @@ def plotHeatmap(based, absolute=1):
 	ECortPops = ['IT2', 'IT3', 'ITP4', 'ITS4', 'IT5A', 'CT5A', 'IT5B', 'CT5B', 'PT5B', 'IT6', 'CT6']
 
 	dfCSDPeak, dfCSDAvg = getCSDDataFrames(dataFile=dataFile, oscEventInfo=thetaOscEventInfo, absolute=absolute)
-	avgCSDPlot = plotDataFrames(dfCSDAvg, absolute=absolute, electrodes=None, pops=ECortPops, title='Avg CSD Values', cbarLabel='CSD', figSize=(10,8), savePath=None, saveFig=False) # figSize=(10,7)
-
+	avgCSDPlot = plotDataFrames(dfCSDAvg, absolute=absolute, electrodes=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9], pops=ECortPops, title='Avg CSD Values', cbarLabel='CSD', figSize=(10,8), savePath=None, saveFig=False) # figSize=(10,7)
+					# electrodes=None
 
 ## Spike panels 
 def getRateSpectrogramData(include=['allCells', 'eachPop'], oscEventInfo=None, binSize=5, minFreq=1, maxFreq=100, stepFreq=1, NFFT=256, noverlap=128, smooth=0, transformMethod = 'morlet', norm=False):
@@ -1434,7 +1434,7 @@ based = '../data/v34_batch57/'  # Change this if necessary with path to data dir
 if __name__ == '__main__':
 	# # Fig 8 -- heatmap
 	# dfCSDPeak, dfCSDAvg, peakValues, avgValues, csdPopData= 
-	plotHeatmap(based, absolute=1)
+	plotHeatmap(based, absolute=0)
 	# # Fig 8 -- CSD panels 
 	# plotCSDPanels(based)
 	# # Fig 8 -- Spike data panels 
