@@ -237,6 +237,6 @@ with open(filename, 'rb') as f:
 
     for p in updateParams:
         if isinstance(p, tuple):
-            cfg.__dict__.update({p: cfgLoad[p[0]][p[1]]})
+            cfg.__dict__[p[0]].update({p[1]: cfgLoad[p[0]][p[1]]})
         else:
             cfg.__dict__.update({p: cfgLoad[p]})
