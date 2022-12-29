@@ -224,14 +224,20 @@ def statsBoxplotALL(frequencyBands, simListsDict, nhpListsDict, dataCategories, 
 			bp = ax.boxplot((simDataPlot,nhpDataPlot),patch_artist=True)	#,showfliers=False)
 
 
-			## ADD STATS ("n.s.") DESIGNATION TO PANELS ####
-			y_max = np.max(np.concatenate((simDataPlot, nhpDataPlot)))
-			y_min = np.min(np.concatenate((simDataPlot, nhpDataPlot)))
-			ax.annotate("", xy=(1,y_max), xycoords='data', xytext=(2,y_max), textcoords='data',
-							arrowprops=dict(arrowstyle="-", ec='#aaaaaa',
-							connectionstyle="bar,fraction=0.1"))
-			ax.text(1.5, y_max+abs(y_max - y_min)*0.15, 'n.s.', 
-				horizontalalignment='center', verticalalignment='center')
+			## ADD STATS ("n.s.") DESIGNATION TO PANELS ##
+			### --> ADD THIS DESIGNATION ONLY TO DELTA DURATION ###
+			if category == 'dur':
+				if band=='delta':
+					y_max = np.max(np.concatenate((simDataPlot, nhpDataPlot)))
+					y_min = np.min(np.concatenate((simDataPlot, nhpDataPlot)))
+					ax.annotate("", xy=(1,y_max), xycoords='data', xytext=(2,y_max), textcoords='data',
+									arrowprops=dict(arrowstyle="-", ec='#aaaaaa',
+									connectionstyle="bar,fraction=0.1"))
+					ax.text(1.5, y_max+abs(y_max - y_min)*0.15, '$n.s.^*$', 
+						horizontalalignment='center', verticalalignment='center')
+					## Increase y axis limit to accommodate stats designation 
+					ax.set_ylim(ymax=y_max+abs(y_max - y_min)*0.3)
+
 
 
 			## Designate colors for boxplots 
@@ -271,8 +277,6 @@ def statsBoxplotALL(frequencyBands, simListsDict, nhpListsDict, dataCategories, 
 			# ax.yaxis.set_major_formatter(formatter) 
 
 
-			## Increase y axis limit to accommodate stats designation 
-			ax.set_ylim(ymax=y_max+abs(y_max - y_min)*0.25)
 
 			if r:
 				if cat_yLabel == 'DURATION\n(ms)':
