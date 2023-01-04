@@ -308,12 +308,14 @@ def plotWavelets(dfs, df, dat, tt, sampr, dlms, subjectName, chanNumber, frequen
 		evv.specrange = specrange  
 		evv.draw(eventIdx,clr='red',drawfilt=True,filtclr='b',ylspec=ylspec)
 
-def plotOscEvents(oscEventsInfo, dataPaths, frequencyBands):
+def plotOscEvents(oscEventsInfo, dataPaths, frequencyBands, eventTypes=['sim', 'nhp']):
 	### oscEventsInfo: dict w/ info about the oscillation events to plot
 	### dataPaths: dict w/ paths to sim & nhp fig6_data
 	### frequencyBands: list w/ desired frequency bands 
+  ### eventTypes: list w/ desired eventType(s) to plot 
 
-	eventTypes = ['sim', 'nhp']
+	# eventTypes = ['sim', 'nhp']
+
 	for band in frequencyBands:
 		for eventType in eventTypes:
 			## Check for dlms, df, and allData files
@@ -393,8 +395,8 @@ oscEventsInfo = {'gamma':
 					{'sim': {'subjName': 'v34_batch57_4_4_data_timeRange_0_6', 'chan': 12, 'eventIdx': 1423, 'specrange': (0,30), 'ylspec': (30,95)},  
 					'nhp':{'subjName': '2-bu027028013_timeRange_0_40', 'chan': 14, 'eventIdx': 2658, 'specrange': (0,30), 'ylspec': (30,95)}}, 
 				'beta': 
-					{'sim': {'subjName': 'v34_batch57_3_2_data_timeRange_0_6', 'chan': 14, 'eventIdx': 1710, 'specrange': (0,30), 'ylspec': (10,50)}}, 
-					#'nhp': {'subjName': '2-rb031032016_timeRange_40_80', 'chan': 14, 'eventIdx': 2342, 'specrange': (0,25), 'ylspec': (10,50)}}, 
+					{'sim': {'subjName': 'v34_batch57_3_2_data_timeRange_0_6', 'chan': 14, 'eventIdx': 1710, 'specrange': (0,30), 'ylspec': (10,50)}, 
+					'nhp': {'subjName': '2-rb031032016_timeRange_40_80', 'chan': 14, 'eventIdx': 2342, 'specrange': (0,25), 'ylspec': (10,50)}}, 
 				'alpha': 
 					{'sim': {'subjName': 'v34_batch57_3_2_data_timeRange_6_11', 'chan': 9, 'eventIdx': 863, 'specrange': (0,20), 'ylspec': (1,30)}, 
 					'nhp':{'subjName': '2-bu027028013_timeRange_80_120', 'chan': 7, 'eventIdx': 784, 'specrange': (0,20), 'ylspec': (1,30)}}, 
@@ -404,7 +406,6 @@ oscEventsInfo = {'gamma':
 				'delta': 
 					{'sim': {'subjName': 'v34_batch57_3_4_data_timeRange_0_6', 'chan': 14, 'eventIdx': 1666, 'specrange': (0,30), 'ylspec': (1,10)}, 
 					'nhp':{'subjName': '2-rb031032016_timeRange_160_200', 'chan': 18, 'eventIdx': 3020, 'specrange': (0,30), 'ylspec': (1,10)}}}
-              ### ^^ this last one is the only dlms file I cannot account for locally or on gcp bucket 
 
 
 # --------------------------
@@ -412,7 +413,7 @@ oscEventsInfo = {'gamma':
 # --------------------------
 if __name__ == '__main__':
 	# Fig 6
-	plotOscEvents(oscEventsInfo, dataPaths, ['beta'])#['gamma', 'beta', 'alpha', 'theta', 'delta'])
+	plotOscEvents(oscEventsInfo, dataPaths, ['theta'], eventTypes=['nhp'])  #['gamma', 'beta', 'alpha', 'theta', 'delta'])
 
   # # dlms testing
   # dataPath = '../data/v34_batch57/fig6_data/'
