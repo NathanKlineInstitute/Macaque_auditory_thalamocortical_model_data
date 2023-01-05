@@ -7,7 +7,7 @@ from morlet import MorletSpec
 import os 
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.ticker  ## for colorbar 
-
+from pylab import *
 
 
 def readChannelFiles(dataPath, subjectName, frequencyBand, chanNumber):
@@ -265,7 +265,7 @@ class eventviewer():
 
 		####
 		plt.tight_layout()
-		plt.show()
+		#plt.show()
 
 def plotWavelets(dfs, df, dat, tt, sampr, dlms, subjectName, chanNumber, frequencyBand, eventIdx=None, specrange=None, ylspec=None, saveFig=0):
 	# dfs; pandas dataframe read by readWaveletFile
@@ -309,8 +309,8 @@ def plotWavelets(dfs, df, dat, tt, sampr, dlms, subjectName, chanNumber, frequen
 		evv.draw(eventIdx,clr='red',drawfilt=True,filtclr='b',ylspec=ylspec)
 		## SAVE FIGURE 
 		if saveFig:
-			figname = frequencyBand + '_' + subjectName + '.png'
-			plt.savefig(figname)
+			figname = frequencyBand + '_' + subjectName #+ '.png'
+			savefig(figname + '.png', dpi=600)
 
 
 
@@ -420,7 +420,7 @@ oscEventsInfo = {'gamma':
 # --------------------------
 if __name__ == '__main__':
 	# Fig 6
-	plotOscEvents(oscEventsInfo, dataPaths, ['theta', 'beta', 'delta'], eventTypes=['nhp'], saveFig=1)  #['gamma', 'beta', 'alpha', 'theta', 'delta'])
+	plotOscEvents(oscEventsInfo, dataPaths, ['theta', 'beta'], eventTypes=['nhp'], saveFig=1)  #['gamma', 'beta', 'alpha', 'theta', 'delta'])
 
 	# # dlms testing
 	# dataPath = '../data/v34_batch57/fig6_data/'
