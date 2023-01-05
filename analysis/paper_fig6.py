@@ -413,7 +413,7 @@ oscEventsInfo = {'gamma':
 # --------------------------
 if __name__ == '__main__':
 	# Fig 6
-	plotOscEvents(oscEventsInfo, dataPaths, ['theta'], eventTypes=['nhp'])  #['gamma', 'beta', 'alpha', 'theta', 'delta'])
+	plotOscEvents(oscEventsInfo, dataPaths, ['theta', 'beta', 'delta'], eventTypes=['nhp'])  #['gamma', 'beta', 'alpha', 'theta', 'delta'])
 
   # # dlms testing
   # dataPath = '../data/v34_batch57/fig6_data/'
