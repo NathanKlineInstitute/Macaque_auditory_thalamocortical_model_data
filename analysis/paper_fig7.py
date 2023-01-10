@@ -233,12 +233,13 @@ def statsBoxplotALL(frequencyBands, simListsDict, nhpListsDict, dataCategories, 
 					ax.annotate("", xy=(1,y_max), xycoords='data', xytext=(2,y_max), textcoords='data',
 									arrowprops=dict(arrowstyle="-", ec='#aaaaaa',
 									connectionstyle="bar,fraction=0.1"))
-					ax.text(1.5, y_max+abs(y_max - y_min)*0.15, '$n.s.*$', 
-						horizontalalignment='center', verticalalignment='center')
+					plt.rcParams['text.usetex'] = True
+					ax.text(1.5, y_max+abs(y_max - y_min)*0.15, r"$n.s.^{\dagger}$", 
+						horizontalalignment='center', verticalalignment='center') # $n.s.*
 					## Increase y axis limit to accommodate stats designation 
 					ax.set_ylim(ymax=y_max+abs(y_max - y_min)*0.3)
 
-
+			plt.rcParams['text.usetex'] = False
 
 			## Designate colors for boxplots 
 			for patch, color in zip(bp['boxes'], colors):

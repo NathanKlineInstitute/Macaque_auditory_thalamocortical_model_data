@@ -311,6 +311,8 @@ def plotWavelets(dfs, df, dat, tt, sampr, dlms, subjectName, chanNumber, frequen
 		if saveFig:
 			figname = frequencyBand + '_' + subjectName #+ '.png'
 			savefig(figname + '.png', dpi=600)
+		else:
+			plt.show()
 
 
 
@@ -420,7 +422,7 @@ oscEventsInfo = {'gamma':
 # --------------------------
 if __name__ == '__main__':
 	# Fig 6
-	plotOscEvents(oscEventsInfo, dataPaths, ['theta', 'beta'], eventTypes=['nhp'], saveFig=1)  #['gamma', 'beta', 'alpha', 'theta', 'delta'])
+	plotOscEvents(oscEventsInfo, dataPaths, ['alpha', 'gamma'], eventTypes=['sim'], saveFig=1)  #['gamma', 'beta', 'alpha', 'theta', 'delta'])
 
 	# # dlms testing
 	# dataPath = '../data/v34_batch57/fig6_data/'
