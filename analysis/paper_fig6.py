@@ -131,15 +131,15 @@ class eventviewer():
 	def setupax (self):
 		# setup axes
 		self.lax = [self.fig.add_subplot(self.nrow,1,i+1) for i in range(self.nrow)]
-		self.lax[-1].set_xlabel('Time (ms)',fontsize=12)#fontsize=10)
-		self.lax[-1].tick_params(labelsize=10)#8)
+		self.lax[-1].set_xlabel('Time (ms)',fontsize=12)
+		self.lax[-1].tick_params(labelsize=10)
 		if self.MUA is not None:
 			self.lax[-1].set_ylabel('MUA') # MUA is filtered, rectified version of the LFP, so its units should be mV?
-			self.lax[-2].set_ylabel(r'CSD ($mV/mm^2$)',fontsize=12)#fontsize=10)
+			self.lax[-2].set_ylabel(r'CSD ($mV/mm^2$)',fontsize=12)
 		else:
-			self.lax[-1].set_ylabel(r'CSD ($mV/mm^2$)',fontsize=12)#fontsize=10)
-		self.lax[0].set_ylabel('Frequency (Hz)',fontsize=12);#fontsize=10);
-		self.lax[0].tick_params(labelsize=10)#8)
+			self.lax[-1].set_ylabel(r'CSD ($mV/mm^2$)',fontsize=12)
+		self.lax[0].set_ylabel('Frequency (Hz)',fontsize=12);
+		self.lax[0].tick_params(labelsize=10)
 	def clf (self):
 		# clear figure
 		self.fig.clf()
@@ -190,7 +190,7 @@ class eventviewer():
 		axtstr = band + ', peakF: ' + str(round(peakF,2)) + ' Hz'#, channel: ' + str(chan)
 		# axtstr += ', Foct:' + str(round(Foct,2))
 		# print(axtstr) # print the info
-		if verbose: ax.set_title(axtstr, fontsize=14) #fontsize=8) # fontsize added to try to fix formatting
+		if verbose: ax.set_title(axtstr, fontsize=14) # fontsize added to try to fix formatting
 		gdx += 1
 		#####################################################      
 		#                     PLOT BEFORE
@@ -417,12 +417,26 @@ oscEventsInfo = {'gamma':
 					'nhp':{'subjName': '2-rb031032016_timeRange_160_200', 'chan': 18, 'eventIdx': 3020, 'specrange': (0,30), 'ylspec': (1,10)}}}
 
 
+
+
+### Dict with beta replacement osc event info ###
+betaOscEventInfo = {'beta': 
+						{'sim': {'subjName': 'v34_batch67_CINECA_0_0_data', 'chan': 19, 'eventIdx': 4336, 'specrange': (0,30), 'ylspec': (10,50)},
+						'nhp': {'subjName': '2-bu027028013_timeRange_40_80', 'chan': 14, 'eventIdx': 2241, 'specrange': (0,25), 'ylspec': (10,50)}}}
+
+dataPaths_betaReplacement = {'sim': '../data/v34_batch67/fig6_beta_replacement/', 'nhp': '../data/NHP_data/spont/fig6_beta_replacement/'}
+
+
+
 # --------------------------
 # Main
 # --------------------------
 if __name__ == '__main__':
 	# Fig 6
-	plotOscEvents(oscEventsInfo, dataPaths, ['alpha', 'gamma'], eventTypes=['sim'], saveFig=1)  #['gamma', 'beta', 'alpha', 'theta', 'delta'])
+	### plotOscEvents(oscEventsInfo, dataPaths, ['alpha', 'gamma'], eventTypes=['sim'], saveFig=1)  #['gamma', 'beta', 'alpha', 'theta', 'delta'])
+
+	# Beta Osc Event Replacement 
+	plotOscEvents(betaOscEventInfo, dataPaths_betaReplacement, ['beta'], eventTypes=['sim'], saveFig=1)
 
 	# # dlms testing
 	# dataPath = '../data/v34_batch57/fig6_data/'
@@ -430,14 +444,32 @@ if __name__ == '__main__':
 	# df, dlms, allData, CSD, dt, tt, sampr, dat, timeRange = readSubjectFiles(dataPath=dataPath, subjectName=subjectName, dlms=True)
 	# dfs = readChannelFiles(dataPath=dataPath, subjectName=subjectName, frequencyBand='beta', chanNumber=14)
 
+	# ### TIME RANGE BUFFERS FOR EACH OSC EVENT --> NECESSARY FOR OSC-EVENT RASTERS
+	# bands=['alpha', 'theta', 'delta', 'beta', 'gamma']
+	# eventType = 'sim'
+	# dataPath = '../data/v34_batch57/fig6_data/'
+	# for band in bands:
+	# 	print('-----' + band + '-----')
+	# 	subjectName = oscEventsInfo[band][eventType]['subjName']	#'v34_batch67_v34_batch67_0_0_data_timeRange_'#'v34_batch57_3_2_data_timeRange_0_6'
+	# 	chan = oscEventsInfo[band][eventType]['chan']
+	# 	dfs = readChannelFiles(dataPath=dataPath, subjectName=subjectName, frequencyBand=band, chanNumber=chan)
 
+	# 	eventIdx = oscEventsInfo[band][eventType]['eventIdx']
 
+	# 	dur,chan,hasbefore,hasafter,windowidx,offidx,left,right,minT,maxT,peakT,minF,maxF,peakF,avgpowevent,ncycle,WavePeakT,WaveTroughT,WaveletPeakT,WaveletLeftTroughT,WaveletRightTroughT,w2,left,right,band,alignoffset,filtsigcor,Foct,cycnpeak,ERPscore,OSCscore = getStats(dfs, evidx=eventIdx,align='bywaveletpeak',verbose=True)
 
+	# 	## Resize w2 to match the load.py calculation for the osc event plotting (in def draw() in class eventviewer)
+	# 	w2 = int(w2*0.6)
+	# 	print('w2: ' + str(w2))
 
+	# 	print('minT: ' + str(minT))
+	# 	print('maxT: ' + str(maxT))
 
-
-
-
+	# 	## Calculate beforeT
+	# 	idx0_before = max(0,left - w2)
+	# 	idx1_before = left 
+	# 	beforeT = (maxT-minT) * (idx1_before - idx0_before) / (right - left + 1)
+	# 	print('beforeT: ' + str(beforeT))
 
 
 
