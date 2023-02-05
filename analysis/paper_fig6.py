@@ -357,6 +357,8 @@ def plotOscEvents(oscEventsInfo, dataPaths, frequencyBands, eventTypes=['sim', '
 				## NOTE: for the line below, can use either df or dfs, in this context. 
 				eventIdx = oscEventsInfo[band][eventType]['eventIdx']
 				dur,chan,hasbefore,hasafter,windowidx,offidx,left,right,minT,maxT,peakT,minF,maxF,peakF,avgpowevent,ncycle,WavePeakT,WaveTroughT,WaveletPeakT,WaveletLeftTroughT,WaveletRightTroughT,w2,left,right,band,alignoffset,filtsigcor,Foct,cycnpeak,ERPscore,OSCscore = getStats(dfs, evidx=eventIdx,align='bywaveletpeak',verbose=True)
+				print('minf: ' + str(minf))
+				print('maxf: ' + str(maxf))
 
 				## Resize w2 to match the load.py calculation for the osc event plotting (in def draw() in class eventviewer)
 				w2 = int(w2*0.6)
@@ -421,8 +423,8 @@ oscEventsInfo = {'gamma':
 
 ### Dict with beta replacement osc event info ###
 betaOscEventInfo = {'beta': 
-						{'sim': {'subjName': 'v34_batch67_CINECA_0_0_data', 'chan': 19, 'eventIdx': 4336, 'specrange': (0,20), 'ylspec': (10,30)},
-						'nhp': {'subjName': '2-bu027028013_timeRange_40_80', 'chan': 14, 'eventIdx': 2241, 'specrange': (0,20), 'ylspec': (10,30)}}}
+						{'sim': {'subjName': 'v34_batch67_CINECA_0_0_data', 'chan': 19, 'eventIdx': 4336, 'specrange': (0,20), 'ylspec': (2,40)},
+						'nhp': {'subjName': '2-bu027028013_timeRange_40_80', 'chan': 14, 'eventIdx': 2241, 'specrange': (0,20), 'ylspec': (2,40)}}}
 
 dataPaths_betaReplacement = {'sim': '../data/v34_batch67/fig6_beta_replacement/', 'nhp': '../data/NHP_data/spont/fig6_beta_replacement/'}
 
@@ -436,7 +438,7 @@ if __name__ == '__main__':
 	### plotOscEvents(oscEventsInfo, dataPaths, ['alpha', 'gamma'], eventTypes=['sim'], saveFig=1)  #['gamma', 'beta', 'alpha', 'theta', 'delta'])
 
 	# Beta Osc Event Replacement 
-	plotOscEvents(betaOscEventInfo, dataPaths_betaReplacement, ['beta'], eventTypes=['nhp'], saveFig=1)
+	plotOscEvents(betaOscEventInfo, dataPaths_betaReplacement, ['beta'], eventTypes=['sim', 'nhp'], saveFig=1)
 
 	# # dlms testing
 	# dataPath = '../data/v34_batch57/fig6_data/'
