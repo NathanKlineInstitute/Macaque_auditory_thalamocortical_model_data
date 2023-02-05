@@ -357,8 +357,8 @@ def plotOscEvents(oscEventsInfo, dataPaths, frequencyBands, eventTypes=['sim', '
 				## NOTE: for the line below, can use either df or dfs, in this context. 
 				eventIdx = oscEventsInfo[band][eventType]['eventIdx']
 				dur,chan,hasbefore,hasafter,windowidx,offidx,left,right,minT,maxT,peakT,minF,maxF,peakF,avgpowevent,ncycle,WavePeakT,WaveTroughT,WaveletPeakT,WaveletLeftTroughT,WaveletRightTroughT,w2,left,right,band,alignoffset,filtsigcor,Foct,cycnpeak,ERPscore,OSCscore = getStats(dfs, evidx=eventIdx,align='bywaveletpeak',verbose=True)
-				print('minf: ' + str(minf))
-				print('maxf: ' + str(maxf))
+				print('minf: ' + str(minF))
+				print('maxf: ' + str(maxF))
 
 				## Resize w2 to match the load.py calculation for the osc event plotting (in def draw() in class eventviewer)
 				w2 = int(w2*0.6)
