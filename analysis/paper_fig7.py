@@ -178,9 +178,9 @@ def statsBoxplotALL(frequencyBands, simListsDict, nhpListsDict, dataCategories, 
 	fig = plt.figure(figsize=figsize)
 
 	if colors is None:
-		colorsDur = ['crimson', 'purple'] 				# ['yellow','lightblue']
-		colorsPeakF = ['olivedrab', 'darkgoldenrod']	# ['mediumblue', 'silver'] 	#['midnightblue', 'silver']		#['midnightblue', 'olivedrab']		#['purple', 'green']
-		colorsNCycle = ['mediumblue', 'silver']			# ['olivedrab', 'darkgoldenrod'] 			#['red', 'blue']
+		colorsDur = ['blue', 'orange'] 		#['crimson', 'purple'] 				# ['yellow','lightblue']
+		colorsPeakF = ['blue', 'orange']	#['olivedrab', 'darkgoldenrod']	# ['mediumblue', 'silver'] 	#['midnightblue', 'silver']		#['midnightblue', 'olivedrab']		#['purple', 'green']
+		colorsNCycle = ['blue', 'orange'] 	#['mediumblue', 'silver']			# ['olivedrab', 'darkgoldenrod'] 			#['red', 'blue']
 
 	nrows = len(dataCategories)  ### should make it 
 	ncols = len(frequencyBands)
@@ -221,7 +221,7 @@ def statsBoxplotALL(frequencyBands, simListsDict, nhpListsDict, dataCategories, 
 			ax = fig.add_subplot(nrows, ncols, i)
 			simDataPlot = simLists[band]['all'] 							# simLists[band][region]
 			nhpDataPlot = nhpLists[band]['all']								# nhpLists[band][region]
-			bp = ax.boxplot((simDataPlot,nhpDataPlot),patch_artist=True)	#,showfliers=False)
+			bp = ax.boxplot((simDataPlot,nhpDataPlot),medianprops=dict(color='red'),patch_artist=True)	#,showfliers=False)
 
 
 			## ADD STATS ("n.s.") DESIGNATION TO PANELS ##
