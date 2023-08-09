@@ -352,6 +352,7 @@ def plotStats():
 	statsBoxplotALL(frequencyBands, simListsDict=simListsDict, nhpListsDict=nhpListsDict, 
 			dataCategories=['dur', 'peakF', 'nCycle'], sampleNums=0, figsize=None, colors=None)
 
+
 ######### PATH TO DATA DIRECTORY #########
 dataPathPrefix = '../data/'  ## NOTE: Change this to wherever Macaque_auditory_thalamocortical_model_data/data directory is located, e.g. '/Home/Desktop/Macaque_auditory_thalamocortical_model_data/data/'
 
