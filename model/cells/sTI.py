@@ -83,8 +83,8 @@ class sTI_cell:
       ## IL current (high-thresh calcium pool)
       soma.insert('icalINT')
       soma.pcabar_icalINT = 0.00009
-      h.sh1_icalINT = -10
-      h.sh2_icalINT = 0
+      soma.sh1_icalINT = -10 #h.sh1_icalINT = -10
+      soma.sh2_icalINT = 0 #h.sh2_icalINT = 0
       ## High-thresh calcium pool pump 
       soma.insert('Cad_int')
       soma.taur_Cad_int  = 150 

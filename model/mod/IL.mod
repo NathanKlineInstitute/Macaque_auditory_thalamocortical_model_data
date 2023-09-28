@@ -18,8 +18,7 @@ INDEPENDENT {t FROM 0 TO 1 WITH 1 (ms)}
 NEURON {
 	SUFFIX icalINT
 	USEION Ca READ Cai, Cao WRITE iCa VALENCE 2
-        RANGE pcabar, g
-	GLOBAL 	m_inf, tau_m, sh1, sh2, rat
+    RANGE pcabar, g, m_inf, tau_m, sh1, sh2, rat
 }
 
 
