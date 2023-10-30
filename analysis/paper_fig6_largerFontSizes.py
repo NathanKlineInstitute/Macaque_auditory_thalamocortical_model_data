@@ -9,6 +9,10 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.ticker  ## for colorbar 
 from pylab import *
 
+import IPython as ipy
+
+fontsize = 16 # fig 6
+fontsize = 10 # fig 7
 
 def readChannelFiles(dataPath, subjectName, frequencyBand, chanNumber):
 	# dataPath: str; to base directory with osc event files 
@@ -131,15 +135,16 @@ class eventviewer():
 	def setupax (self):
 		# setup axes
 		self.lax = [self.fig.add_subplot(self.nrow,1,i+1) for i in range(self.nrow)]
-		self.lax[-1].set_xlabel('Time (ms)',fontsize=15)#12)
-		self.lax[-1].tick_params(labelsize=12)	#10)
+		self.lax[-1].set_xlabel('Time (ms)',fontsize=fontsize)#12)
+		self.lax[-1].tick_params(labelsize=fontsize)	#10)
 		if self.MUA is not None:
 			self.lax[-1].set_ylabel('MUA') # MUA is filtered, rectified version of the LFP, so its units should be mV?
-			self.lax[-2].set_ylabel(r'CSD ($mV/mm^2$)',fontsize=12)
+			self.lax[-2].set_ylabel(r'CSD ($mV/mm^2$)',fontsize=fontsize)
 		else:
-			self.lax[-1].set_ylabel('CSD Amplitude (' + r'$\frac{mV}{mm^2}$' + ')', fontsize=15) #(r'CSD ($mV/mm^2$)',fontsize=12)
-		self.lax[0].set_ylabel('Frequency (Hz)',fontsize=15);		#12);
-		self.lax[0].tick_params(labelsize=12)#10)
+			self.lax[-1].set_ylabel('CSD Amplitude (' + r'$\frac{mV}{mm^2}$' + ')', fontsize=fontsize) #(r'CSD ($mV/mm^2$)',fontsize=12)
+		self.lax[0].set_ylabel('Frequency test (Hz)',fontsize=fontsize);		#12);
+		self.lax[0].tick_params(labelsize=fontsize)#10)
+		
 	def clf (self):
 		# clear figure
 		self.fig.clf()
@@ -180,9 +185,10 @@ class eventviewer():
 		cax = divider.append_axes('right', size='3%', pad=0.2)
 		fmt = matplotlib.ticker.ScalarFormatter(useMathText=True)
 		#fmt.set_powerlimits((0,0))
-		cbar=plt.colorbar(img, cax = cax, orientation='vertical', format=fmt, ticks=[0,5,10,15,20])		#label='Power'
-		cbar.set_label('Power', size=12) 
-		cbar.ax.tick_params(labelsize=10)
+		cbar=plt.colorbar(img, cax = cax, orientation='vertical', format=fmt)#, ticks=[0,5,10,15,20])		#label='Power'
+		#cbar.set_label('Power (' + r'$\frac{mVˆ2}{mm^4}$' + ', size=fontsize)
+		cbar.set_label('Power', size=fontsize) 
+		cbar.ax.tick_params(labelsize=fontsize)
 		# cbar.ax.set_yticklabels([0,5,10,15,20])  ## CUSTOM!!! 
 		
 		drbox(minT+alignoffset,maxT+alignoffset,minF,maxF,'r',lwbox,ax)  
@@ -192,9 +198,11 @@ class eventviewer():
 		# axtstr += 'peakF:' + str(round(peakF,2)) + ' Hz'
 		# axtstr = 'Model (Beta, 18 Hz)' #band + ', peakF: ' + str(round(peakF,2)) + ' Hz'#, channel: ' + str(chan)
 		# axtstr += ', Foct:' + str(round(Foct,2))
-		axtstr = band + ', peakF: ' + str(round(peakF,2)) + ' Hz'   #, channel: ' + str(chan)
+		#axtstr = band + ', peakF: ' + str(round(peakF,2)) + ' Hz'   #, channel: ' + str(chan)
+		axtstr = 'Peak Freq: ' + str(round(peakF,2)) + ' Hz'   #, channel: ' + str(chan)
+
 		# print(axtstr) # print the info
-		if verbose: ax.set_title(axtstr, fontsize=20)
+		if verbose: ax.set_title(axtstr, fontsize=fontsize)
 		gdx += 1
 		#####################################################      
 		#                     PLOT BEFORE
@@ -219,14 +227,14 @@ class eventviewer():
 		sig = CSD[chan,left:right]
 		tt = np.linspace(minT,maxT,len(sig)) + alignoffset
 		ax = self.lax[gdx+0]
-		axtstr = 'duration: '+str(round(dur,1))+' ms, '
+		axtstr = 'Duration: '+str(round(dur,1))+' ms, '
 		# if cycnpeak > -1: axtstr += str(int(cycnpeak)) + ' peaks, '
 		axtstr += str(round(ncycle,1))+' cycles' #, '
 		#axtstr += 'filtsigcor:'+str(round(filtsigcor,2))
 		if ERPscore > -2: axtstr += ', ERPscore:'+str(round(ERPscore,2))
 		if OSCscore > -2: axtstr += ', OSCscore:'+str(round(OSCscore,2))
 		# print(axtstr) # print the info
-		if verbose: ax.set_title(axtstr, fontsize=20)#14)
+		if verbose: ax.set_title(axtstr, fontsize=fontsize)#14)
 		ax.plot(tt,CSD[chan,left:right],clr,linewidth=lw)
 		if drawfilt:
 			fsig = np.array(dframe.at[evidx,'filtsig'])
@@ -399,10 +407,11 @@ def plotOscEvents(oscEventsInfo, dataPaths, frequencyBands, eventTypes=['sim', '
 
 				plotWavelets(dfs, df, dat, tt, sampr, dlms, subjectName, chan, band, eventIdx, specrange=specrange, ylspec=ylspec, saveFig=saveFig)
 
+	ipy.embed()
 
 
 ### Dict with paths to data directories ### 
-dataPaths = {'sim': '../data/v34_batch57/fig6_data/', 'nhp': '../data/NHP_data/spont/fig6_data/'} ## NOTE: Change these to sim & nhp fig6_data/ directory locations 
+dataPaths = {'sim': '../../A1/data/v34_batch57/fig6_data/', 'nhp': '../../A1/data/NHPdata/spont/fig6_data/'} ## NOTE: Change these to sim & nhp fig6_data/ directory locations 
 
 
 ### Dict with oscillation events info ### 
@@ -425,10 +434,10 @@ oscEventsInfo = {'gamma':
 
 ### Dict with beta replacement osc event info ###
 betaOscEventInfo = {'beta': 
-						{'sim': {'subjName': 'v34_batch67_CINECA_0_0_data', 'chan': 19, 'eventIdx': 4336, 'specrange': (0,20), 'ylspec': (2,40)},
+						{'sim': {'subjName': 'v34_batch67_CINECA_0_0_data', 'chan': 19, 'eventIdx': 4336, 'specrange': (0,20), 'ylspec': (2,50)},
 						'nhp': {'subjName': '2-bu027028013_timeRange_40_80', 'chan': 14, 'eventIdx': 2241, 'specrange': (0,20), 'ylspec': (2,50)}}}
 
-dataPaths_betaReplacement = {'sim': '../data/v34_batch67/fig6_beta_replacement/v34_batch67_CINECA_0_0_data/', 'nhp': '../data/NHP_data/spont/fig6_beta_replacement/'}
+dataPaths_betaReplacement = {'sim': '../../A1/data/v34_batch57/fig6_data/fig6_beta_replacement/v34_batch67_CINECA_0_0_data/', 'nhp': '../data/NHP_data/spont/fig6_beta_replacement/'}
 
 
 
@@ -437,10 +446,10 @@ dataPaths_betaReplacement = {'sim': '../data/v34_batch67/fig6_beta_replacement/v
 # --------------------------
 if __name__ == '__main__':
 	# Fig 6
-	plotOscEvents(oscEventsInfo, dataPaths, ['alpha', 'gamma'], eventTypes=['sim'], saveFig=1)  #['gamma', 'beta', 'alpha', 'theta', 'delta'])
+	# plotOscEvents(oscEventsInfo, dataPaths, ['gamma', 'beta', 'alpha', 'theta', 'delta'], eventTypes=['nhp'], saveFig=1)  #['gamma', 'beta', 'alpha', 'theta', 'delta'])
 
-	# Beta Osc Event Replacement 
-	plotOscEvents(betaOscEventInfo, dataPaths_betaReplacement, ['beta'], eventTypes=['sim', 'nhp'], saveFig=0)
+	#Beta Osc Event Replacement 
+	plotOscEvents(betaOscEventInfo, dataPaths_betaReplacement, ['beta'], eventTypes=['sim'], saveFig=1)
 
 
 
