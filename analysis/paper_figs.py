@@ -1426,7 +1426,7 @@ def fig_CSD_osc_spiking():
 
 # ---------------------------------------------------------------------------------------------------
 def fig_CSD_contrib_PSD():
-    from simDataAnalysis import getCSDDataFrames
+    from csd_analysis import getCSDDataFrames
     fontsiz = 16
     
     dataFile = '../data/v34_batch67/v34_batch67_CINECA_0_0_data.pkl'
@@ -1845,4 +1845,4 @@ if __name__ == '__main__':
 
     # -------------------------------------------
     # Figure S5 (supplemental; osc event analysis)
-    # import plotSimData
+    # import csd_analysis
