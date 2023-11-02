@@ -1,5 +1,5 @@
 """
-expDataAnalysis.py 
+dataAnalysis.py 
 
 Code to anlayze non-human primate data 
 
@@ -1552,6 +1552,7 @@ if __name__ == '__main__':
         print('s2high: ' + str(s2high))
 
         
+
 
         ### Plot batches of CSDs:
         ## Set up time ranges for loop

@@ -9,6 +9,10 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.ticker  ## for colorbar 
 from pylab import *
 
+import IPython as ipy
+
+fontsize = 16 # fig 6
+fontsize = 10 # fig 7
 
 def readChannelFiles(dataPath, subjectName, frequencyBand, chanNumber):
 	# dataPath: str; to base directory with osc event files 
@@ -22,6 +26,7 @@ def readChannelFiles(dataPath, subjectName, frequencyBand, chanNumber):
 	dfs = pd.read_pickle(dfsFullPath)
 
 	return dfs 
+
 def readSubjectFiles(dataPath, subjectName, dlms=True):
 	### df data frame (.pkl):
 	dfFullPath = dataPath + subjectName + '_df.pkl'
@@ -131,15 +136,16 @@ class eventviewer():
 	def setupax (self):
 		# setup axes
 		self.lax = [self.fig.add_subplot(self.nrow,1,i+1) for i in range(self.nrow)]
-		self.lax[-1].set_xlabel('Time (ms)',fontsize=12)
-		self.lax[-1].tick_params(labelsize=10)
+		self.lax[-1].set_xlabel('Time (ms)',fontsize=fontsize)#12)
+		self.lax[-1].tick_params(labelsize=fontsize)	#10)
 		if self.MUA is not None:
 			self.lax[-1].set_ylabel('MUA') # MUA is filtered, rectified version of the LFP, so its units should be mV?
-			self.lax[-2].set_ylabel(r'CSD ($mV/mm^2$)',fontsize=12)
+			self.lax[-2].set_ylabel(r'CSD ($mV/mm^2$)',fontsize=fontsize)
 		else:
-			self.lax[-1].set_ylabel(r'CSD ($mV/mm^2$)',fontsize=12)
-		self.lax[0].set_ylabel('Frequency (Hz)',fontsize=12);
-		self.lax[0].tick_params(labelsize=10)
+			self.lax[-1].set_ylabel('CSD Amplitude (' + r'$\frac{mV}{mm^2}$' + ')', fontsize=fontsize) #(r'CSD ($mV/mm^2$)',fontsize=12)
+		self.lax[0].set_ylabel('Frequency test (Hz)',fontsize=fontsize);		#12);
+		self.lax[0].tick_params(labelsize=fontsize)#10)
+		
 	def clf (self):
 		# clear figure
 		self.fig.clf()
@@ -154,15 +160,6 @@ class eventviewer():
 		if clr is None: clr = lclr[evidx%len(lclr)]
 		dur,chan,hasbefore,hasafter,windowidx,offidx,left,right,minT,maxT,peakT,minF,maxF,peakF,avgpowevent,ncycle,WavePeakT,WaveTroughT,WaveletPeakT,WaveletLeftTroughT,WaveletRightTroughT,w2,left,right,band,alignoffset,filtsigcor,Foct,cycnpeak,ERPscore,OSCscore = geteventprop(dframe, evidx, align)	# self.getallprop(evidx,align)  
 		print('windowidx: ' + str(windowidx)) ## testing dlms 
-		# print('hasbefore: ' + str(hasbefore))
-		# print('hasafter: ' + str(hasafter)) # Adding these lines to figure out more about what hasbefore / hasafter are about and if they're relevant to tightening x- axis 
-		# print('minT: ' + str(minT)) ## Adding these lines to strategize about tightening x axis 
-		# print('maxT: ' + str(maxT)) ## Adding these lines to strategize about tightening x axis 
-		# # print('chan: ' + str(chan)) ## Adding these lines to strategize about tightening x axis 
-		# print('alignoffset: ' + str(alignoffset)) ## Adding these lines to strategize about tightening x axis 
-		# print('waveletPeakT: ' + str(WaveletPeakT))
-		# print('right: ' + str(right))## Adding these lines to strategize about tightening x axis 
-		# print('left: ' + str(left))## Adding these lines to strategize about tightening x axis 
 		### MAKING w2 SMALLER FOR LATER ON ###
 		w2 = int(w2*0.6) 
 		ax = self.lax[gdx]
@@ -179,25 +176,24 @@ class eventviewer():
 		divider = make_axes_locatable(ax)
 		cax = divider.append_axes('right', size='3%', pad=0.2)
 		fmt = matplotlib.ticker.ScalarFormatter(useMathText=True)
-		cbar=plt.colorbar(img, cax = cax, orientation='vertical', format=fmt)#label='Power', format=fmt)
-		cbar.set_label(' ', size=12)#('Power', size=12)
+		#fmt.set_powerlimits((0,0))
+		cbar=plt.colorbar(img, cax = cax, orientation='vertical', format=fmt)#, ticks=[0,5,10,15,20])		#label='Power'
+		#cbar.set_label('Power (' + r'$\frac{mVˆ2}{mm^4}$' + ', size=fontsize)
+		cbar.set_label('Power', size=fontsize) 
+		cbar.ax.tick_params(labelsize=fontsize)
+		# cbar.ax.set_yticklabels([0,5,10,15,20])  ## CUSTOM!!! 
 		
 		drbox(minT+alignoffset,maxT+alignoffset,minF,maxF,'r',lwbox,ax)  
 		if ylspec is not None: ax.set_ylim(ylspec)
-		# axtstr = 'channel:'+str(chan)+', event:'+str(evidx)+', power:'+str(round(avgpowevent,1))+'\n'
-		# axtstr = band + ': minF:' + str(round(minF,2)) + ' Hz, maxF:' + str(round(maxF,2)) + ' Hz, '
-		# axtstr += 'peakF:' + str(round(peakF,2)) + ' Hz'
-		axtstr = band + ', peakF: ' + str(round(peakF,2)) + ' Hz'#, channel: ' + str(chan)
-		# axtstr += ', Foct:' + str(round(Foct,2))
+		axtstr = 'Peak Freq: ' + str(round(peakF,2)) + ' Hz'   #, channel: ' + str(chan)
+
 		# print(axtstr) # print the info
-		if verbose: ax.set_title(axtstr, fontsize=14) # fontsize added to try to fix formatting
+		if verbose: ax.set_title(axtstr, fontsize=fontsize)
 		gdx += 1
 		#####################################################      
 		#                     PLOT BEFORE
 		if hasbefore:
 			idx0 = max(0,left - w2)
-			# print('idx0: ' + str(idx0))  ## Adding these lines to strategize about tightening x axis 
-			# print('w2: ' + str(w2))    ## Adding these lines to strategize about tightening x axis 
 			idx1 = left    
 			# print('idx1: ' + str(idx1))  ## Adding these lines to strategize about tightening x axis 
 			sig = CSD[chan,idx0:idx1]
@@ -210,19 +206,20 @@ class eventviewer():
 				ax = self.lax[gdx+1]
 				ax.plot(tt,MUA[chan+1,idx0:idx1],'k',linewidth=lw)
 			# print(tt[0],tt[-1])
+
 		#####################################################      
 		#                     PLOT DURING
 		sig = CSD[chan,left:right]
 		tt = np.linspace(minT,maxT,len(sig)) + alignoffset
 		ax = self.lax[gdx+0]
-		axtstr = 'duration: '+str(round(dur,1))+' ms, '
+		axtstr = 'Duration: '+str(round(dur,1))+' ms, '
 		# if cycnpeak > -1: axtstr += str(int(cycnpeak)) + ' peaks, '
 		axtstr += str(round(ncycle,1))+' cycles' #, '
 		#axtstr += 'filtsigcor:'+str(round(filtsigcor,2))
 		if ERPscore > -2: axtstr += ', ERPscore:'+str(round(ERPscore,2))
 		if OSCscore > -2: axtstr += ', OSCscore:'+str(round(OSCscore,2))
 		# print(axtstr) # print the info
-		if verbose: ax.set_title(axtstr, fontsize=14)
+		if verbose: ax.set_title(axtstr, fontsize=fontsize)#14)
 		ax.plot(tt,CSD[chan,left:right],clr,linewidth=lw)
 		if drawfilt:
 			fsig = np.array(dframe.at[evidx,'filtsig'])
@@ -231,6 +228,7 @@ class eventviewer():
 		if MUA is not None:
 			ax = self.lax[gdx+1]
 			ax.plot(tt,MUA[chan+1,left:right],clr,linewidth=lw)
+
 		#####################################################
 		#                     PLOT AFTER
 		if hasafter:
@@ -265,7 +263,6 @@ class eventviewer():
 
 		####
 		plt.tight_layout()
-		#plt.show()
 
 def plotWavelets(dfs, df, dat, tt, sampr, dlms, subjectName, chanNumber, frequencyBand, eventIdx=None, specrange=None, ylspec=None, saveFig=0):
 	# dfs; pandas dataframe read by readWaveletFile
@@ -291,9 +288,6 @@ def plotWavelets(dfs, df, dat, tt, sampr, dlms, subjectName, chanNumber, frequen
 		else:
 			ylspec = (1,50) # (1,10) # (30,85)
 
-	## TEST LINE (colorbar / amplitude situation)
-	# if specrange is None:
-	# 	specrange = ylspec #(0,30) # (30,80)
 
 	if eventIdx is None:  
 		if len(dfs) > 0:
@@ -309,12 +303,10 @@ def plotWavelets(dfs, df, dat, tt, sampr, dlms, subjectName, chanNumber, frequen
 		evv.draw(eventIdx,clr='red',drawfilt=True,filtclr='b',ylspec=ylspec)
 		## SAVE FIGURE 
 		if saveFig:
-			figname = frequencyBand + '_' + subjectName #+ '.png'
+			figname = 'figs/fig6_' + frequencyBand + '_' + subjectName #+ '.png'
 			savefig(figname + '.png', dpi=600)
 		else:
 			plt.show()
-
-
 
 
 def plotOscEvents(oscEventsInfo, dataPaths, frequencyBands, eventTypes=['sim', 'nhp'], saveFig=0):
@@ -390,76 +382,7 @@ def plotOscEvents(oscEventsInfo, dataPaths, frequencyBands, eventTypes=['sim', '
 
 				specrange = oscEventsInfo[band][eventType]['specrange']
 				ylspec = oscEventsInfo[band][eventType]['ylspec']
-				## TEST LINE
-				# specrange = ylspec
 
 				plotWavelets(dfs, df, dat, tt, sampr, dlms, subjectName, chan, band, eventIdx, specrange=specrange, ylspec=ylspec, saveFig=saveFig)
-
-
-
-### Dict with paths to data directories ### 
-dataPaths = {'sim': '../data/v34_batch57/fig6_data/', 'nhp': '../data/NHP_data/spont/fig6_data/'} ## NOTE: Change these to sim & nhp fig6_data/ directory locations 
-
-
-### Dict with oscillation events info ### 
-oscEventsInfo = {'gamma': 
-					{'sim': {'subjName': 'v34_batch57_4_4_data_timeRange_0_6', 'chan': 12, 'eventIdx': 1423, 'specrange': (0,30), 'ylspec': (30,95)},  
-					'nhp':{'subjName': '2-bu027028013_timeRange_0_40', 'chan': 14, 'eventIdx': 2658, 'specrange': (0,30), 'ylspec': (30,95)}}, 
-				'beta': 
-					{'sim': {'subjName': 'v34_batch57_3_2_data_timeRange_0_6', 'chan': 14, 'eventIdx': 1710, 'specrange': (0,30), 'ylspec': (10,50)}, 
-					'nhp': {'subjName': '2-rb031032016_timeRange_40_80', 'chan': 14, 'eventIdx': 2342, 'specrange': (0,25), 'ylspec': (10,50)}}, 
-				'alpha': 
-					{'sim': {'subjName': 'v34_batch57_3_2_data_timeRange_6_11', 'chan': 9, 'eventIdx': 863, 'specrange': (0,20), 'ylspec': (1,30)}, 
-					'nhp':{'subjName': '2-bu027028013_timeRange_80_120', 'chan': 7, 'eventIdx': 784, 'specrange': (0,20), 'ylspec': (1,30)}}, 
-				'theta': 
-					{'sim': {'subjName': 'v34_batch57_3_3_data_timeRange_0_6', 'chan': 8, 'eventIdx': 973, 'specrange': (0,20), 'ylspec': (1,12)}, 
-					'nhp':{'subjName': '2-rb031032016_timeRange_40_80', 'chan': 6, 'eventIdx': 747, 'specrange': (0,15), 'ylspec': (1,12)}}, 
-				'delta': 
-					{'sim': {'subjName': 'v34_batch57_3_4_data_timeRange_0_6', 'chan': 14, 'eventIdx': 1666, 'specrange': (0,30), 'ylspec': (1,10)}, 
-					'nhp':{'subjName': '2-rb031032016_timeRange_160_200', 'chan': 18, 'eventIdx': 3020, 'specrange': (0,30), 'ylspec': (1,10)}}}
-
-
-# --------------------------
-# Main
-# --------------------------
-if __name__ == '__main__':
-	# Fig 6
-	### plotOscEvents(oscEventsInfo, dataPaths, ['alpha', 'gamma'], eventTypes=['sim'], saveFig=1)  #['gamma', 'beta', 'alpha', 'theta', 'delta'])
-
-	# # dlms testing
-	# dataPath = '../data/v34_batch57/fig6_data/'
-	# subjectName = 'v34_batch57_3_2_data_timeRange_0_6'
-	# df, dlms, allData, CSD, dt, tt, sampr, dat, timeRange = readSubjectFiles(dataPath=dataPath, subjectName=subjectName, dlms=True)
-	# dfs = readChannelFiles(dataPath=dataPath, subjectName=subjectName, frequencyBand='beta', chanNumber=14)
-
-	# ### TIME RANGE BUFFERS FOR EACH OSC EVENT --> NECESSARY FOR OSC-EVENT RASTERS
-	# bands=['alpha', 'theta', 'delta', 'beta', 'gamma']
-	# eventType = 'sim'
-	# dataPath = '../data/v34_batch57/fig6_data/'
-	# for band in bands:
-	# 	print('-----' + band + '-----')
-	# 	subjectName = oscEventsInfo[band][eventType]['subjName']	#'v34_batch67_v34_batch67_0_0_data_timeRange_'#'v34_batch57_3_2_data_timeRange_0_6'
-	# 	chan = oscEventsInfo[band][eventType]['chan']
-	# 	dfs = readChannelFiles(dataPath=dataPath, subjectName=subjectName, frequencyBand=band, chanNumber=chan)
-
-	# 	eventIdx = oscEventsInfo[band][eventType]['eventIdx']
-
-	# 	dur,chan,hasbefore,hasafter,windowidx,offidx,left,right,minT,maxT,peakT,minF,maxF,peakF,avgpowevent,ncycle,WavePeakT,WaveTroughT,WaveletPeakT,WaveletLeftTroughT,WaveletRightTroughT,w2,left,right,band,alignoffset,filtsigcor,Foct,cycnpeak,ERPscore,OSCscore = getStats(dfs, evidx=eventIdx,align='bywaveletpeak',verbose=True)
-
-	# 	## Resize w2 to match the load.py calculation for the osc event plotting (in def draw() in class eventviewer)
-	# 	w2 = int(w2*0.6)
-	# 	print('w2: ' + str(w2))
-
-	# 	print('minT: ' + str(minT))
-	# 	print('maxT: ' + str(maxT))
-
-	# 	## Calculate beforeT
-	# 	idx0_before = max(0,left - w2)
-	# 	idx1_before = left 
-	# 	beforeT = (maxT-minT) * (idx1_before - idx0_before) / (right - left + 1)
-	# 	print('beforeT: ' + str(beforeT))
-
-
-
 
 
