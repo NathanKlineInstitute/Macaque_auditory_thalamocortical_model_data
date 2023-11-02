@@ -33,13 +33,12 @@ def Vaknin (x):
 def removemean (x, ax=1):
   mean = np.mean(x, axis=ax, keepdims=True)
   x -= mean
-  #print(np.mean(x, axis=ax, keepdims=True))
-  #return x
+  print(np.mean(x, axis=ax, keepdims=True))
 
 # get CSD - first do a lowpass filter. lfps is a list or numpy array of LFPs arranged spatially by column
 # spacing_um is electrode's contact spacing in units of micron
 # returns CSD in units of mV/mm**2 (assuming lfps are in mV)
-def getCSD (lfps,sampr,spacing_um=100.0,minf=0.05,maxf=300,norm=True,vaknin=False):
+def getCSDa1dat (lfps,sampr,spacing_um=100.0,minf=0.05,maxf=300,norm=True,vaknin=False):
   datband = getbandpass(lfps,sampr,minf,maxf)
   #datband = getlowpass(lfps,sampr,maxf)
   if datband.shape[0] > datband.shape[1]: # take CSD along smaller dimension
@@ -51,7 +50,7 @@ def getCSD (lfps,sampr,spacing_um=100.0,minf=0.05,maxf=300,norm=True,vaknin=Fals
   # also might want to subtract mean of each channel before calculating the diff(diff) ?
   #
   if vaknin: datband = Vaknin(datband)
-  if norm: removemean(datband,ax=ax) #datband=removemean(datband,ax=1)#datband=removemean(datband,ax=ax) #
+  if norm: removemean(datband,ax=ax)
   # when drawing CSD make sure that negative values (depolarizing intracellular current) drawn in red,
   # and positive values (hyperpolarizing intracellular current) drawn in blue
   spacing_mm = spacing_um/1000 # spacing in mm

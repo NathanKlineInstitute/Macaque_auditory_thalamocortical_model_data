@@ -965,7 +965,7 @@ def fig_BBN():
                     print(save_filename)
                     #plt.savefig(save_filename, dpi=300)
 
-
+# ---------------------------------------------------------------------------------------------------
 def fig_BBN_ERP(usemodel=0):
     from avgERP import drawDataAvgERP
 
@@ -1215,7 +1215,7 @@ def fig_osc_events():
     from osc_events import plotOscEvents
 
     ### Dict with paths to data directories ### 
-    dataPaths = {'sim': '../data/v34_batch57/osc_events_data/', 'nhp': '../data/NHPdata/spont/osc_event_data/'} 
+    dataPaths = {'sim': '../data/v34_batch57/osc_events_data/', 'nhp': '../data/NHPdata/spont/osc_events_data/'} 
 
     ### Dict with oscillation events info ### 
     oscEventsInfo = {'gamma': 
@@ -1241,7 +1241,7 @@ def fig_osc_events():
 def fig_beta_osc_event():
     from osc_events import plotOscEvents
 
-    dataPaths_beta = {'sim': '../data/v34_batch67/', 'nhp': '../data/NHP_data/spont/osc_event_data/'}
+    dataPaths_beta = {'sim': '../data/v34_batch67/', 'nhp': '../data/NHP_data/spont/osc_events_data/'}
 
     ### Dict with beta  ###
     betaOscEventInfo = {'beta': 
@@ -1252,6 +1252,10 @@ def fig_beta_osc_event():
     plotOscEvents(betaOscEventInfo, dataPaths_beta, ['beta'], eventTypes=['sim'], saveFig=1)
 
 
+# ---------------------------------------------------------------------------------------------------
+def fig_osc_stats():
+    from osc_stats import plotStats
+    plotStats()
 
 # ---------------------------------------------------------------------------------------------------
 def fig_CSD_osc_spiking():
@@ -1420,18 +1424,34 @@ def fig_CSD_osc_spiking():
     plt.savefig(save_filename, dpi=300)
 
 
+# ---------------------------------------------------------------------------------------------------
+def fig_CSD_contrib_PSD():
+    from simDataAnalysis import getCSDDataFrames
+    fontsiz = 16
+    
+    dataFile = '../data/v34_batch67/v34_batch67_CINECA_0_0_data.pkl'
+    timeRange = [2149.66, 2332.71]
+    betaOscEventInfo = {'chan': 19, 'minT': 2149.6607483037415, 'maxT': 2332.7116635583175, 'alignoffset': -2270.0, 'left': 42993, 'right': 46654, 'w2':1098}
+    
+    ## Get peak and avg dataframes  
+    dfCSDPeak, dfCSDAvg = getCSDDataFrames(dataFile=dataFile, timeRange=timeRange, oscEventInfo=betaOscEventInfo) ## going to need oscEventInfo here 
 
+
+    dfCSDAvg[19].abs().sort_values(ascending=False)[0:13].plot.bar(fontsize = fontsiz)
+    plt.subplots_adjust(bottom=0.18, top=0.98, right=0.85, left=0.1)
+    plt.savefig('figs/fig7_pop_contrib.png', dpi=300)
 
 
 # ---------------------------------------------------------------------------------------------------
-def fig_CSD_contrib_PSD():
-    pass
-    # used plotSimData.py
-    # fontsiz = 16
-    # dfCSDAvg[19].abs().sort_values(ascending=False)[0:13].plot.bar(fontsize = fontsiz)
-    # plt.subplots_adjust(bottom=0.18, top=0.98, right=0.85, left=0.1)
-    # plt.savefig('pop_contrib.png', dpi=300)
+def fig_fI_curve():
 
+    from batchAnalysisPlotCombined import fIAnalysis
+
+    dataFolder = '../data/'
+    batchLabel = 'v22_batch14'  # 'v50_batch1' #
+    loadAll = 0
+
+    fIAnalysis(dataFolder, batchLabel, loadAll)
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -1586,7 +1606,7 @@ def fig_speech():
 
     plotWav = 1
     plotICrates = 1
-    plotRaster = 1
+    plotRaster = 0
     plotSpikeHist = 1
 
     if plotWav:
@@ -1610,13 +1630,13 @@ def fig_speech():
         plt.plot(audio, lw=1)
         plt.ylabel("Amplitude")
         plt.xlabel("Time")
-        plt.savefig('../data/ICoutput/01_ba_peter_wav.png', dpi=300)
+        plt.savefig('figs/figS5_01_ba_peter_wav.png', dpi=300)
 
         plt.figure(figsize=(14,6))
         plt.plot(audio_filt, lw=1)
         plt.ylabel("Amplitude")
         plt.xlabel("Time")
-        plt.savefig('../data/ICoutput/01_ba_peter_wav_filtered.png', dpi=300)
+        plt.savefig('figs/figS5_01_ba_peter_wav_filtered.png', dpi=300)
 
     if plotICrates:
         #plot IC rates
@@ -1627,7 +1647,7 @@ def fig_speech():
         plt.plot(audio.T, lw=1)
         plt.ylabel("Amplitude")
         plt.xlabel("Time")
-        plt.savefig('../data/ICoutput/01_ba_peter_ICoutput.png', dpi=300)
+        plt.savefig('figs/figS5_01_ba_peter_ICoutput.png', dpi=300)
 
 
 
@@ -1751,7 +1771,7 @@ def fig_speech():
 
             plt.subplots_adjust(bottom=0.1, top=0.98, right=0.90 , left=0.05)
 
-            save_filename = '%s_spikehist_%d_%d_%s.png'%(filename[:-4], timeRange[0], timeRange[1], includeLabel)
+            save_filename = 'figs/figS5_%s_spikehist_%d_%d_%s.png'%(filename.split('/')[-1][:-4], timeRange[0], timeRange[1], includeLabel)
             print(save_filename)
             plt.savefig(save_filename, dpi=300)
 
@@ -1762,6 +1782,9 @@ def fig_speech():
 
 # --------------------------
 # Main
+#
+# Select what figure to plot by uncommenting the corresponding lines
+#
 # --------------------------
 if __name__ == '__main__':
 
@@ -1771,7 +1794,7 @@ if __name__ == '__main__':
   
     # -------------------------------------------    
     # Figure 3 (multiscale measures)
-    # fig_raster('v35_batch9', 'v35_batch9_0_0_data', timeRange=[1000,2000])
+    fig_raster('v35_batch9', 'v35_batch9_0_0_data', timeRange=[1000,2000])
     # fig_traces('v34_batch27', 'v34_batch27_0_0', timeRange=[1000,2000])
     # fig_stats('v35_batch9', 'v35_batch9_0_0_data', timeRange=[1000,2000])
     # fig_CSD('v34_batch27', 'v34_batch27_0_0', timeRange=[1000,2000])
@@ -1788,11 +1811,12 @@ if __name__ == '__main__':
 
     # -------------------------------------------
     # Figure 5 (LFP PSD comparison)
-    #fig_LFP_PSD_comparison()    
+    # fig_LFP_PSD_comparison()    
 
     # -------------------------------------------
     # Figure 6 (CSD osc event examples and stats)
-    # fig_osc_events()
+    # fig_osc_events()  # Fig 6A
+    # fig_osc_stats()   # Fig 6B
 
     # -------------------------------------------
     # Figure 7 (analysis of CSD osc event)
@@ -1804,7 +1828,8 @@ if __name__ == '__main__':
 
     # -------------------------------------------
     # Figures S1 (fI curve)
-    # batchAnalysis
+    # run batch using b = fIcurve(pops=[...]) in batch.py
+    # fig_fI_curve()
 
     # -------------------------------------------
     # Figures S2
@@ -1820,4 +1845,4 @@ if __name__ == '__main__':
 
     # -------------------------------------------
     # Figure S5 (supplemental; osc event analysis)
-    # check erica's code
+    # import plotSimData
