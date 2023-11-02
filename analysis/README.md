@@ -2,9 +2,9 @@
 ## Description
 Multiscale model of the macaque auditory thalamocortical circuits developed using NetPyNE (www.netpyne.org).
 
-The model is described in the following preprint paper (currently under review in Nature Communications):
+The model is described in the following publication:
 
-Dura-Bernal S, Griffith EY, Barczak A, O’Connell MN, McGinnis T, Schroeder C, Lytton WW, Lakatos P, Neymotin SA. (2022) **Data-driven multiscale model of macaque auditory thalamocortical circuits reproduces in vivo dynamics.** BioRxiv 2022.02.03.479036
+Dura-Bernal S, Griffith EY, Barczak A, O’Connell MN, McGinnis T, Moreira JV, Schroeder C, Lytton WW, Lakatos P, Neymotin SA. (2023) **Data-driven multiscale model of macaque auditory thalamocortical circuits reproduces in vivo dynamics.** Cell Reports (In Press)
 
 
 ## Setup and execution
@@ -13,21 +13,7 @@ This code can be used to reproduce the analysis and figures in the paper. It req
 
 Some analysis functions requires NetPyNE; see installations instructions here: http://netpyne.org/install.html#
 
-## Overview of file structure:
-
-* paper_figs.py: Python source code to generate the results in paper figures 1 to 5.
-
-* paper_fig6.py: Python source code to generate figure 6. 
-
-* paper_fig7.py: Python source code to generate figure 7. 
-
-* paper_fig8.py: Python source code to generate figure 8. 
-
-* expDataAnalysis.py: Supporting source code used by paper_figs.py to analyze the experimental data.
-
-* optunaAnalysis.py: Python source code to analyze the model parameter optimization results.
-
-* utils.py, downsample.py, filter.py and morlet.py: Python helper functions.
+The file **paper_figs.py** contains the Python source code to generate the results in all the paper figures. It makes use of several other Python files in the analysis folder.
 
 
 For further information please contact: salvador.dura-bernal@downstate.edu, erica.griffith@downstate.edu and/or samuel.neymotin@nki.rfmh.org
